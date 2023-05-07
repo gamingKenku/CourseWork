@@ -5,7 +5,7 @@ from users.forms import LoginForm, UserForm, DisciplineNameForm, ClassCodeForm
 from users.models import AppUser, DisciplineName, DisciplineTeacher, ClassCode, ClassStudent, Parents
 from django.contrib.auth import login, logout, authenticate
 from django.db.models import Q
-from scheduling.methods.defs import num_years
+from users.methods.defs import num_years
 from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404
 import datetime
@@ -85,9 +85,15 @@ def teachers_view(request):
             teacher.groups.add(group)
         else:
             print(teacher_form.errors)
+            request.session['teacher_form_post_data'] = request.POST
+
+    if 'teacher_form_post_data' in request.session:
+        teacher_form = UserForm(request.session['teacher_form_post_data'])
+        del request.session['teacher_form_post_data']
+    else:
+        teacher_form = UserForm
 
     discipline_form = DisciplineNameForm()
-    teacher_form = UserForm()
     context = {
         "teacher_form" : teacher_form, 
         "teachers": teachers, 
@@ -134,67 +140,68 @@ def students_view(request):
     classes = ClassCode.objects.all()
 
     if request.method == "POST":
-        student_form = UserForm(request.POST, prefix='student_form')
+        student_form = UserForm(request.POST, prefix="student_form")
         mother_form = UserForm(request.POST, prefix="mother_form")
         father_form = UserForm(request.POST, prefix="father_form")
+
         if student_form.is_valid() and mother_form.is_valid() and father_form.is_valid():
-            student = AppUser()
-            student.username = student_form.cleaned_data["username"]
-            student.set_password(student_form.cleaned_data["password"])
-            student.email = student_form.cleaned_data["email"]
-            student.first_name = student_form.cleaned_data["first_name"]
-            student.last_name = student_form.cleaned_data["last_name"]
-            student.patronym = student_form.cleaned_data["patronym"]
-            student.date_of_birth = student_form.cleaned_data["date_of_birth"]
-            student.age = num_years(student_form.cleaned_data["date_of_birth"])
+            usernames_valid = True
+            emails_valid = True
+            student = student_form.save(commit=False)
+            mother = mother_form.save(commit=False)
+            father = father_form.save(commit=False)
 
-            mother = AppUser()
-            mother.username = mother_form.cleaned_data["username"]
-            mother.set_password(mother_form.cleaned_data["password"])
-            mother.email = mother_form.cleaned_data["email"]
-            mother.first_name = mother_form.cleaned_data["first_name"]
-            mother.last_name = mother_form.cleaned_data["last_name"]
-            mother.patronym = mother_form.cleaned_data["patronym"]
-            mother.date_of_birth = mother_form.cleaned_data["date_of_birth"]
-            mother.age = num_years(mother_form.cleaned_data["date_of_birth"])
+            if len(set([student.username, mother.username, father.username])) < 3:
+                usernames_valid = False
+                request.session['student_form_post_data'] = request.POST
+                student_form.add_error("username", "Имена пользователей должны быть разными.")
+                mother_form.add_error("username", "Имена пользователей должны быть разными.")
+                father_form.add_error("username", "Имена пользователей должны быть разными.")
+            
+            if len(set([student.email, mother.email, father.email])) < 3:
+                emails_valid = False
+                request.session['student_form_post_data'] = request.POST
+                student_form.add_error("email", "Адреса электронных почт должны быть разными.")
+                mother_form.add_error("email", "Адреса электронных почт должны быть разными.")
+                father_form.add_error("email", "Адреса электронных почт должны быть разными.")
 
-            father = AppUser()
-            father.username = father_form.cleaned_data["username"]
-            father.set_password(father_form.cleaned_data["password"])
-            father.email = father_form.cleaned_data["email"]
-            father.first_name = father_form.cleaned_data["first_name"]
-            father.last_name = father_form.cleaned_data["last_name"]
-            father.patronym = father_form.cleaned_data["patronym"]
-            father.date_of_birth = father_form.cleaned_data["date_of_birth"]
-            father.age = num_years(father_form.cleaned_data["date_of_birth"])
+            if usernames_valid and emails_valid:
+                student.save()
+                mother.save()
+                father.save()
 
-            student.save()
-            mother.save()
-            father.save()
-
-            group = Group.objects.get(name='student')
-            student.groups.add(group)
-            group = Group.objects.get(name="parent")
-            mother.groups.add(group)
-            father.groups.add(group)
-            class_code = ClassCode.objects.get(id=request.POST.get("class_select"))
-            ClassStudent.objects.create(class_code=class_code, student=student)
-
-            Parents.objects.create(student=student, mother=mother, father=father)
+                group = Group.objects.get(name='student')
+                student.groups.add(group)
+                group = Group.objects.get(name="parent")
+                mother.groups.add(group)
+                father.groups.add(group)
+                class_code = ClassCode.objects.get(id=request.POST.get("class_select"))
+                ClassStudent.objects.create(class_code=class_code, student=student)
+                Parents.objects.create(student=student, mother=mother, father=father)
         else:
-            print("Ученик: " + student_form.errors.as_text())
-            print("Мать:" + mother_form.errors.as_text())
-            print("Отец:" + father_form.errors.as_text())
+            request.session['student_form_post_data'] = request.POST
+
+        print(student_form.errors)
+        print(mother_form.errors)
+        print(father_form.errors)
+
+    if 'student_form_post_data' in request.session and (student_form.errors or mother_form.errors or father_form.errors):
+        student_form = UserForm(request.session['student_form_post_data'], prefix="student_form")
+        mother_form = UserForm(request.session['student_form_post_data'], prefix="mother_form")
+        father_form = UserForm(request.session['student_form_post_data'], prefix="father_form")        
+        del request.session['student_form_post_data']
+    else:
+        student_form = UserForm()
+        mother_form = UserForm()
+        father_form = UserForm()
 
     class_code_form = ClassCodeForm()
-    student_form = UserForm(prefix="student_form")
-    mother_form = UserForm(prefix="mother_form")
-    father_form = UserForm(prefix="father_form")
+    
     context = {
         "teachers": teachers,
-        "student_form": student_form,
-        "mother_form": mother_form,
-        "father_form": father_form,
+        "student_form" : student_form,
+        "mother_form" : mother_form,
+        "father_form" : father_form,
         "class_code_form": class_code_form,
         "students_classes": students_classes,
         "classes": classes
@@ -212,7 +219,7 @@ def add_class(request):
             new_class.class_code = class_code
             new_class.homeroom_teacher = AppUser.objects.get(id=teacher_id)
             new_class.save()
-    return HttpResponseRedirect('')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 def user_info(request, user_id):

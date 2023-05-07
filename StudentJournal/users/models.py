@@ -12,11 +12,7 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError("The Email must be set")
         email = self.normalize_email(email)
-        name = 'admin'
-        age = 100
-        dob = date.today()
-        user = self.model(username=username, first_name=name, last_name=name,
-                          email=email, age=age, date_of_birth=dob, **extra_fields)
+        user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save()
 
@@ -35,9 +31,9 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=50, null=True, blank=False)
     last_name = models.CharField(max_length=50, null=True, blank=False)
     patronym = models.CharField(max_length=50, null=True, blank=True)
-    email = models.EmailField(max_length=50)
-    age = models.IntegerField(validators=[MinValueValidator(6), MaxValueValidator(100)])
-    date_of_birth = models.DateTimeField()
+    email = models.EmailField(max_length=50, unique=True)
+    age = models.IntegerField(null=True)
+    date_of_birth = models.DateTimeField(null=True, blank=False)
     is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
