@@ -1,0 +1,77 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+<div class="container pt-3 pb-3">
+    <div style class="row">
+        <div class="col-md-5">
+            <h4>Добавление нового учителя</h4>
+            {{ teacher_form.media }}
+            <form action="/teachers/" method="post" class="form" autocomplete="off">
+                {% csrf_token %}
+                {% bootstrap_form teacher_form %}
+                <div>
+                    <label class="pb-3 me-3" for="group_select">Выберите роль учителя:</label>
+                    <select style="display: inline-block;" class="form_select me-3" name="group_select" id="group_select"> 
+                        <option value="teacher">Учитель</option>
+                        <option value="head_teacher">Завуч</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-light">Сохранить</button>
+            </form>
+            <br>
+            <h4>Прикрепить учителя к преподаванию предмета</h4>
+            <form style="height: 50px;" action="/teachers/add_discipline_to_teacher/" method="post" class="form d-flex justify-content-between align-items-center">
+                {% csrf_token %}
+                <select class="form_select mb-0" name="teacher_select" id="teacher_select">
+                    {% for teacher in teachers %}
+                    <option value="{{teacher.id}}">{{teacher.first_name}} {{teacher.last_name}} {{teacher.patronym}}</option>
+                    {% endfor %}
+                </select>
+                <select class="form_select mb-0" name="discipline_select" id="discipline_select">
+                    {% for discipline in disciplines %}
+                    <option value="{{discipline.id}}">{{discipline.discipline_name}}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-light">Сохранить</button>
+            </form>
+            <br>
+            <h4>Добавление нового предмета</h4>
+            <form action="/teachers/add_discipline/" method="post" class="form" autocomplete="off">
+                {% csrf_token %}
+                {% bootstrap_form discipline_form %}
+                <button type="submit" class="btn btn-light">Сохранить</button>
+            </form>
+        </div>
+        <div class="col-md-1">
+            
+        </div>
+        <div class="col-md-6 bg-light list">
+            <table class="table table-striped">
+                <thead>
+                    <th scope="col">Ф.И.О.</th>
+                    <th scope="col">Предметы</th>
+                </thead>
+                <tbody>
+                    {% for teacher in teachers %}
+                    <tr>
+                        <td>
+                            <a href="/users/{{ teacher.id }}">
+                                {{teacher.first_name}} {{teacher.last_name}} {{teacher.patronym}}
+                            </a>
+                        </td>
+                        <td>
+                            {% for discipline in disciplines_dict|get_item:teacher %}
+                            {{ discipline }} <br>
+                            {% endfor%}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

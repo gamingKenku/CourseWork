@@ -1,0 +1,63 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+<div class="container pt-3 pb-3">
+    <div class="row">
+        <div class="col-md-4">
+            <h4>Добавление нового класса</h4>
+            <form action="/students/add_class/" method="post" class="form" autocomplete="off">
+                {% csrf_token %}
+                {% bootstrap_form class_code_form %}
+                <label class="pb-3 me-3" for="teacher_select">Выберите классного руководителя:</label>
+                <select style="display: inline-block;" class="form_select" name="teacher_select" id="teacher_select">
+                    {% for teacher in teachers %}
+                    <option value="{{teacher.id}}">{{teacher.first_name}} {{teacher.last_name}} {{teacher.patronym}}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-light">Сохранить</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+
+        </div>
+        <div class="col-md-4">
+            <a type="button" class="btn btn-danger" href="/classes/all_classes_advance">Перевести все классы на следующий год</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h4>Список классов:</h4>
+            <table class="table table-striped">
+                <thead>
+                    <th scope="col">Класс</th>
+                    <th scope="col">Количество учеников</th>
+                    <th scope="col">Классный руководитель</th>
+                    <th scope="col">Статус</th>
+                </thead>
+                <tbody>
+                    {% for class in classes %}
+                    <tr>
+                        <td>
+                            <a class="link-primary" href="/classes/{{ class.id }}">{{ class.class_code }}</a>
+                        </td>
+                        <td>
+                            {{ students_classes_dict|get_item:class|length }}
+                        </td>
+                        <td>
+                            <a href="/users/{{ class.homeroom_teacher.id }}">{{ class.homeroom_teacher.first_name }} {{ class.homeroom_teacher.last_name }} {{ class.homeroom_teacher.patronym }}</a>
+                        </td>
+                        <td>
+                            {{ class.get_status_display }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

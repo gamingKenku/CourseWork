@@ -1,0 +1,42 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+<div class="container pt-3 pb-3">
+    <div class="row">
+        <div class="col-md-8">
+            <h4>Редактирование пользователя</h4>
+            {{ user_form.media }}
+            <form action="/users/{{ user.id }}/edit" method="post" class="form" autocomplete="off">
+                {% csrf_token %}
+                {% bootstrap_form user_form %}
+                {% if user|has_group:"teacher" or user|has_group:"head_teacher" or user|has_group:"director" %}
+                <h5>Преподаваемые предметы</h5>
+                <ul>
+                    {% for discipline_record in discipline_records %}
+                    <li class="d-inline">{{ discipline_record.discipline.discipline_name }}</li>
+                    <a class="link link-danger d-inline" href="/teachers/detach_discipline/{{ discipline_record.id }}">Открепить</a>
+                    {% empty %}
+                    <p>Пока не назначены</p>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% if user|has_group:"student" %}
+                <h5>Ученик состоит в
+                    <select name="class_select" id="class_select">
+                        <option selected="selected" value="{{ students_class.class_code.id }}">
+                            {{ students_class.class_code.class_code }}</option>
+                        {% for class in classes %}
+                        <option value="{{ class.id }}">{{ class.class_code }}</option>
+                        {% endfor %}
+                    </select> классе
+                </h5>
+                {% endif %}
+                <button type="submit" class="btn btn-light">Сохранить</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

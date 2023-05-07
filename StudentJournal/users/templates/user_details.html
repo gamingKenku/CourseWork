@@ -1,0 +1,51 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+<div class="container pt-3 pb-3">
+    <div class="row">
+        <div class="col-md-8">
+            <h4>Общая информация</h4>
+            <p>Имя пользователя: {{ user.username }}</p>
+            <p>Ф.И.О. : {{ user.first_name }} {{ user.last_name }} {{ user.patronym }}</p>
+            <p>Дата рождения: {{ user.date_of_birth.date }} ({{ user.age }} лет)</p>
+            <p>Роль: {{ group }}</p>
+            {% if user|has_group:"student" %}
+            <p>Класс <a href="/classes/{{ class.class_code.id }}">{{ class.class_code.class_code }}</a></p>
+            <h4>Отчеты</h4>
+            <p><a class="link-primary" href="">Просмотреть отчет по посещаемости</a></p>
+            <p><a class="link-primary" href="">Просмотреть отчет по среднему баллу</a></p>
+            {% endif %}
+            {% if user|has_group:"parent" %}
+            <p>Обучающиеся дети:</p>
+            <ul>
+                {% for parents_record in parents_records %}
+                <li> <a href="/users/{{ parents_record.student.id }}">{{ parents_record.student.first_name }} {{ parents_record.student.last_name }} {{ parents_record.student.patronym }}</a></li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if user|has_group:"teacher" or user|has_group:"head_teacher" or user|has_group:"director" %}
+            <h4>Классы под руководством</h4>
+            <ul>
+                {% for homeroomed_class in homeroomed_classes %}
+                <li><a href="/classes/{{ homeroomed_class.id }}">{{ homeroomed_class.class_code }}</a></li>
+                {% empty %}
+                <p>Пока не назначены</p>
+                {% endfor %}
+            </ul>
+            <h4>Преподаваемые предметы</h4>
+            <ul>
+                {% for discipline in disciplines %}
+                <li>{{ discipline.discipline.discipline_name }}</li>
+                {% empty %}
+                <p>Пока не назначены.</p>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <a type="button" class="btn btn-light" href="/users/{{ user.id }}/edit">Редактировать</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
