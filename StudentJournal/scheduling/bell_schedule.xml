@@ -1,0 +1,52 @@
+<data>
+    <ring_schedule>
+        <lesson number="1">
+            <start>08:30:00</start>
+            <end>09:15:00</end>
+        </lesson>
+        <lesson number="2">
+            <start>09:25:00</start>
+            <end>10:10:00</end>
+        </lesson>
+        <lesson number="3">
+            <start>10:30:00</start>
+            <end>11:15:00</end>
+        </lesson>
+        <lesson number="4">
+            <start>11:25:00</start>
+            <end>12:10:00</end>
+        </lesson>
+        <lesson number="5">
+            <start>12:20:00</start>
+            <end>13:05:00</end>
+        </lesson>
+        <lesson number="6">
+            <start>13:25:00</start>
+            <end>14:10:00</end>
+        </lesson>
+        <lesson number="7">
+            <start>14:10:00</start>
+            <end>15:05:00</end>
+        </lesson>
+        <lesson number="8">
+            <start>15:15:00</start>
+            <end>16:00:00</end>
+        </lesson>
+        <lesson number="9">
+            <start>16:20:00</start>
+            <end>17:05:00</end>
+        </lesson>
+        <lesson number="10">
+            <start>17:15:00</start>
+            <end>18:00:00</end>
+        </lesson>
+        <lesson number="11">
+            <start>18:10:00</start>
+            <end>18:55:00</end>
+        </lesson>
+        <lesson number="12">
+            <start>19:05:00</start>
+            <end>19:50:00</end>
+        </lesson>
+    </ring_schedule>
+</data>

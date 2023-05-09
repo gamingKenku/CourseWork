@@ -1,0 +1,18 @@
+<body>
+    <quarter number="1">
+        <start>2018-09-01</start>
+        <end>2022-10-28</end>
+    </quarter>
+    <quarter number="2">
+        <start>2022-11-07</start>
+        <end>2022-12-30</end>
+    </quarter>
+    <quarter number="3">
+        <start>2023-01-09</start>
+        <end>2023-03-17</end>
+    </quarter>
+    <quarter number="4">
+        <start>2023-03-27</start>
+        <end>2023-05-29</end>
+    </quarter>
+</body>

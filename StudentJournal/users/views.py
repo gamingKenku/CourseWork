@@ -69,16 +69,8 @@ def teachers_view(request):
     if request.method == "POST":
         teacher_form = UserForm(request.POST)
         if teacher_form.is_valid():
-            teacher = AppUser()
-            teacher.username = teacher_form.cleaned_data["username"]
-            teacher.set_password(teacher_form.cleaned_data["password"])
-            teacher.email = teacher_form.cleaned_data["email"]
-            teacher.first_name = teacher_form.cleaned_data["first_name"]
-            teacher.last_name = teacher_form.cleaned_data["last_name"]
-            teacher.patronym = teacher_form.cleaned_data["patronym"]
-            teacher.date_of_birth = teacher_form.cleaned_data["date_of_birth"]
-            teacher.age = num_years(teacher_form.cleaned_data["date_of_birth"])
-            teacher.save()
+            teacher = teacher_form.save()
+            
             group_name = request.POST.get("group_select")
             print(group_name)
             group = Group.objects.get(name=group_name)
@@ -191,9 +183,9 @@ def students_view(request):
         father_form = UserForm(request.session['student_form_post_data'], prefix="father_form")        
         del request.session['student_form_post_data']
     else:
-        student_form = UserForm()
-        mother_form = UserForm()
-        father_form = UserForm()
+        student_form = UserForm(prefix="student_form")
+        mother_form = UserForm(prefix="mother_form")
+        father_form = UserForm(prefix="father_form")
 
     class_code_form = ClassCodeForm()
     

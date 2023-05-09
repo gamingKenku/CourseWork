@@ -5,6 +5,14 @@ import datetime
 from django.contrib.auth.models import Group
 
 class class_tests(TestCase):
+    def setUp(self) -> None:
+        Group.objects.create(name='student')
+        Group.objects.create(name='teacher')
+        Group.objects.create(name='director')
+        Group.objects.create(name='head_teacher')
+        Group.objects.create(name='parent')
+
+
     # def test_unique_validation(self):
     #     teacher = AppUser()
     #     teacher.username = "teacher"
@@ -32,6 +40,7 @@ class class_tests(TestCase):
     #     print(ClassCode.objects.get(id=3).class_code)
     
     def test_add_student(self):
+        print("Test 1 start.")
         c = Client()
 
         teacher = AppUser()
@@ -40,12 +49,10 @@ class class_tests(TestCase):
         teacher.email = "teacher@mail.ru"
         teacher.save()
 
-        Group.objects.create(name='student')
-        Group.objects.create(name='parent')
         ClassCode.objects.create(class_code="1А", homeroom_teacher=teacher)
         
         student_form_data = {
-            'username': 'uchitel', 
+            'username': 'uchitel2', 
             'password': '5789a9321',
             'first_name': 'imya',
             'last_name': 'familya',
@@ -54,7 +61,7 @@ class class_tests(TestCase):
             'date_of_birth': '2023-05-03'
             }
         mother_form_data = {
-            'username': 'uchitel', 
+            'username': 'uchitel4', 
             'password': '5789a9321',
             'first_name': 'imya',
             'last_name': 'familya',
@@ -63,7 +70,7 @@ class class_tests(TestCase):
             'date_of_birth': '2023-05-03'
             }
         father_form_data = {
-            'username': 'uchitel', 
+            'username': 'uchitel5', 
             'password': '5789a9321',
             'first_name': 'imya',
             'last_name': 'familya',
@@ -82,9 +89,37 @@ class class_tests(TestCase):
                 query_dict.update({f"{prefix}-{field}": value})
         query_dict.update({"class_select": 1})
 
-        print(query_dict)
-
         response = c.post('/students/', data=query_dict)
         print(response.status_code)
 
         print(AppUser.objects.all())
+        print("Test 1 end.")
+
+    def test_add_teacher(self):
+        print("Test 2 start.")
+        c = Client()
+
+        teacher_form_data = {
+            'username': 'uchitel1', 
+            'password': '5789a9321',
+            'first_name': 'imya',
+            'last_name': 'familya',
+            'patronym': 'otchestvo',
+            'email': 'person1@mail.ru',
+            'date_of_birth': '1973-05-03',
+            'group_select': "teacher"
+        }
+        
+        responce = c.post("/teachers/", teacher_form_data)
+
+        print(responce.status_code)
+        
+        teacher = AppUser.objects.get()
+        print(teacher.username)
+        print(teacher.first_name)
+        print(teacher.last_name)
+        print(teacher.patronym)
+        print(teacher.email)
+        print(teacher.age)
+
+        print("Test 2 end.")
