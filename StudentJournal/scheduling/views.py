@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from scheduling.schedule_creator import BellSchedule, WeekSchedule, Lesson
-from .forms import LessonDisciplineTeacherForm
+from .forms import LessonSheduleForm
+from django.forms import formset_factory
 
 def create_schedule(request):
     context = {}
@@ -9,9 +10,16 @@ def create_schedule(request):
         pass
 
     week = WeekSchedule()
+    LessonScheduleFormset = formset_factory(LessonSheduleForm, extra=12)
 
     for day in week.schedule.keys():
-        for i in range(0, 12):
-            context[f"{day}-{i}-lesson_form"] = LessonDisciplineTeacherForm(prefix=f"{day}-{i}-lesson_form")
-            
-    return render(request, "")
+        formset = LessonScheduleFormset(prefix=day)
+
+        i = 0
+        for form in formset:
+            form.fields["start_time"].initial = week.schedule[day][i].start_time
+            i += 1
+
+        context[f"{day}_lesson_form"] = formset
+
+    return render(request, "create_schedule.html", context)
