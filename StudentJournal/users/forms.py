@@ -41,37 +41,6 @@ class UserForm(ModelForm):
         }
 
 
-# class StudentParentForm(forms.Form):
-#     student_form = UserForm(prefix="student_form")
-#     mother_form = UserForm(prefix="mother_form")
-#     father_form = UserForm(prefix="father_form")
-
-#     def is_valid(self):
-#         parent_form_valid = super().is_valid()
-
-#         student_form_valid = self.student_form.is_valid()
-#         mother_form_valid = self.mother_form.is_valid()
-#         father_form_valid = self.father_form.is_valid()
-
-#         student_username = self.cleaned_data.get('student_form-username')
-#         mother_username = self.cleaned_data.get('mother_form-username')
-#         father_username = self.cleaned_data.get('father_form-username')
-
-#         student_email = self.cleaned_data.get('student_form-email')
-#         mother_email = self.cleaned_data.get('mother_form-email')
-#         father_email = self.cleaned_data.get('father_form-email')
-
-#         if len(set([student_username, mother_username, father_username])) < 3 or \
-#             len(set([student_email, mother_email, father_email])) < 3:
-#             self.add_error(None, "Имена пользователей должны быть разными.")
-#             return False
-
-#         if not parent_form_valid or not student_form_valid or not mother_form_valid or not father_form_valid:
-#             return False
-
-#         return True
-
-
 class DisciplineNameForm(ModelForm):
     class Meta:
         model = DisciplineName
