@@ -18,6 +18,7 @@ def create_schedule(request):
         i = 0
         for form in formset:
             form.fields["start_time"].initial = week.schedule[day][i].start_time
+            form.fields["end_time"].initial = week.schedule[day][i].end_time
             i += 1
 
         context[f"{day}_lesson_form"] = formset

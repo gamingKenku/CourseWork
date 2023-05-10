@@ -37,5 +37,6 @@ urlpatterns = [
     path('classes/<int:class_id>', users.views.class_info),
     path('classes/<int:class_id>/advance', users.views.class_advance),
     path('classes/all_classes_advance/', users.views.all_classes_advance),
+    path('schedule/create_schedule/', scheduling.views.create_schedule),
     path('', users.views.index)
 ]
