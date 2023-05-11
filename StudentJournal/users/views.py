@@ -173,10 +173,6 @@ def students_view(request):
         else:
             request.session['student_form_post_data'] = request.POST
 
-        print(student_form.errors)
-        print(mother_form.errors)
-        print(father_form.errors)
-
     if 'student_form_post_data' in request.session and (student_form.errors or mother_form.errors or father_form.errors):
         student_form = UserForm(request.session['student_form_post_data'], prefix="student_form")
         mother_form = UserForm(request.session['student_form_post_data'], prefix="mother_form")

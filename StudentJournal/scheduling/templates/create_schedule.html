@@ -5,120 +5,181 @@
 
 {% block content %}
 <div class="container pt-3 pb-3">
-    <form action="" method="post" class="form"></form>
-    <div class="row">
-        <div class="col-md-4">
-            <table>
-                <thead>
-                    <th scope="col">#</th>
-                    <th scope="col">Предмет</th>
-                    <th scope="col">Учитель</th>
-                </thead>
-                <tbody>
-                    {% for lesson_form in monday_lesson_form %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ lesson_form.discipline }}</td>
-                        <td>{{ lesson_form.teacher }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <form action="/schedule/create_schedule/" method="post" class="form">
+        {% csrf_token %}
+        <div class="row">
+            <h4>Расписание для класса <a href="/classes/{{ class_code.id }}">{{ class_code.class_code }}</a></h4>
+            <div class="col-md-4">
+                <table class="table border border-dark">
+                    <thead>
+                        <tr>
+                            <th class="text-center" colspan="4">Понедельник</th>
+                        </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Время</th>
+                            <th>Предмет</th>
+                            <th>Учитель</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ monday_lesson_form.management_form }}
+                        {% for lesson_form in monday_lesson_form %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ lesson_form.start_time.value }}-{{ lesson_form.end_time.value }}</td>
+                            <td>{{ lesson_form.discipline }}</td>
+                            <td>{{ lesson_form.teacher }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <table class="table border border-dark">
+                    <thead>
+                        <tr>
+                            <th class="text-center" colspan="4">Вторник</th>
+                        </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Время</th>
+                            <th>Предмет</th>
+                            <th>Учитель</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ tuesday_lesson_form.management_form }}
+                        {% for lesson_form in tuesday_lesson_form %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ lesson_form.start_time.value }}-{{ lesson_form.end_time.value }}</td>
+                            <td>{{ lesson_form.discipline }}</td>
+                            <td>{{ lesson_form.teacher }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <h4>Выберите четверть, для которой составляется расписание:</h4>
+                <select class="mb-3" name="term_select" id="id_term_select">
+                    <option value="1">Первая</option>
+                    <option value="2">Вторая</option>
+                    <option value="3">Третья</option>
+                    <option value="4">Четвертая</option>
+                </select>
+                <button type="submit" class="btn btn-light d-block mb-3">Сохранить</button>
+            </div>
         </div>
-        <div class="col-md-4">
-            <table>
-                <thead>
-                    <th scope="col">#</th>
-                    <th scope="col">Предмет</th>
-                    <th scope="col">Учитель</th>
-                </thead>
-                <tbody>
-                    {% for lesson_form in tuesday_lesson_form %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ lesson_form.discipline }}</td>
-                        <td>{{ lesson_form.teacher }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="row">
+            <div class="col-md-4">
+                <table class="table border border-dark">
+                    <thead>
+                        <tr>
+                            <th class="text-center" colspan="4">Среда</th>
+                        </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Время</th>
+                            <th>Предмет</th>
+                            <th>Учитель</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ wednesday_lesson_form.management_form }}
+                        {% for lesson_form in wednesday_lesson_form %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ lesson_form.start_time.value }}-{{ lesson_form.end_time.value }}</td>
+                            <td>{{ lesson_form.discipline }}</td>
+                            <td>{{ lesson_form.teacher }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <table class="table border border-dark">
+                    <thead>
+                        <tr>
+                            <th class="text-center" colspan="4">Четверг</th>
+                        </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Время</th>
+                            <th>Предмет</th>
+                            <th>Учитель</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ thursday_lesson_form.management_form }}
+                        {% for lesson_form in thursday_lesson_form %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ lesson_form.start_time.value }}-{{ lesson_form.end_time.value }}</td>
+                            <td>{{ lesson_form.discipline }}</td>
+                            <td>{{ lesson_form.teacher }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4">
-            <table>
-                <thead>
-                    <th scope="col">#</th>
-                    <th scope="col">Предмет</th>
-                    <th scope="col">Учитель</th>
-                </thead>
-                <tbody>
-                    {% for lesson_form in wednesday_lesson_form %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ lesson_form.discipline }}</td>
-                        <td>{{ lesson_form.teacher }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="row">
+            <div class="col-md-4">
+                <table class="table border border-dark">
+                    <thead>
+                        <tr>
+                            <th class="text-center" colspan="4">Пятница</th>
+                        </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Время</th>
+                            <th>Предмет</th>
+                            <th>Учитель</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ friday_lesson_form.management_form }}
+                        {% for lesson_form in friday_lesson_form %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ lesson_form.start_time.value }}-{{ lesson_form.end_time.value }}</td>
+                            <td>{{ lesson_form.discipline }}</td>
+                            <td>{{ lesson_form.teacher }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <table class="table border border-dark">
+                    <thead>
+                        <tr>
+                            <th class="text-center" colspan="4">Суббота</th>
+                        </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Время</th>
+                            <th>Предмет</th>
+                            <th>Учитель</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ saturday_lesson_form.management_form }}
+                        {% for lesson_form in saturday_lesson_form %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ lesson_form.start_time.value }}-{{ lesson_form.end_time.value }}</td>
+                            <td>{{ lesson_form.discipline }}</td>
+                            <td>{{ lesson_form.teacher }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="col-md-4">
-            <table>
-                <thead>
-                    <th scope="col">#</th>
-                    <th scope="col">Предмет</th>
-                    <th scope="col">Учитель</th>
-                </thead>
-                <tbody>
-                    {% for lesson_form in thursday_lesson_form %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ lesson_form.discipline }}</td>
-                        <td>{{ lesson_form.teacher }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4">
-            <table>
-                <thead>
-                    <th scope="col">#</th>
-                    <th scope="col">Предмет</th>
-                    <th scope="col">Учитель</th>
-                </thead>
-                <tbody>
-                    {% for lesson_form in friday_lesson_form %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ lesson_form.discipline }}</td>
-                        <td>{{ lesson_form.teacher }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="col-md-4">
-            <table>
-                <thead>
-                    <th scope="col">#</th>
-                    <th scope="col">Предмет</th>
-                    <th scope="col">Учитель</th>
-                </thead>
-                <tbody>
-                    {% for lesson_form in saturday_lesson_form %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ lesson_form.discipline }}</td>
-                        <td>{{ lesson_form.teacher }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    </form>
 </div>
 {% endblock %}

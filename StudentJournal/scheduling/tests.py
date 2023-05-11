@@ -17,3 +17,14 @@ class ScheduleCreatorTests(TestCase):
         print(response.context)
         print("Responce content:")
         print(response.content)
+
+    def test_schedule_create_post(self):
+        print("test 2 start")
+
+        data = {
+            "monday-0-discipline": "4",
+            "monday-1-discipline": "3",
+            "monday-2-discipline": "2",
+        }
+
+        response = self.c.post("/schedule/create_schedule/", data)

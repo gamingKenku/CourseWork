@@ -1,6 +1,10 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    PermissionsMixin,
+    BaseUserManager,
+)
 from django.core.exceptions import ValidationError
 from datetime import date
 
@@ -40,16 +44,33 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ['email']
+    REQUIRED_FIELDS = ["email"]
+
+    def __str__(self) -> str:
+        return f"{self.last_name} {self.first_name} {self.patronym}"
 
 
 class Parents(models.Model):
-    student = models.OneToOneField(AppUser, on_delete=models.CASCADE, related_name="student_to_parents")
-    mother = models.ForeignKey(AppUser, on_delete=models.CASCADE, null=True, blank=True, related_name="mother_to_parents")
-    father = models.ForeignKey(AppUser, on_delete=models.CASCADE, null=True, blank=True, related_name="father_to_parents")
+    student = models.OneToOneField(
+        AppUser, on_delete=models.CASCADE, related_name="student_to_parents"
+    )
+    mother = models.ForeignKey(
+        AppUser,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="mother_to_parents",
+    )
+    father = models.ForeignKey(
+        AppUser,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="father_to_parents",
+    )
 
     class Meta:
-        unique_together = (('student', 'father', 'mother'),)
+        unique_together = (("student", "father", "mother"),)
 
 
 class ClassCode(models.Model):
@@ -62,33 +83,46 @@ class ClassCode(models.Model):
 
     class_code = models.CharField(max_length=5)
     homeroom_teacher = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    status = models.CharField(max_length=2,
-        choices=STATUS_CHOICES,
-        default=STUDYING)
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=STUDYING)
     graduated_year = models.IntegerField(null=True)
 
     def clean(self):
         super().clean()
         if self.status == self.STUDYING:
             # Check if there are other records with the same class_code and status='ST'
-            if ClassCode.objects.filter(class_code=self.class_code, status=self.STUDYING).exclude(pk=self.pk).exists():
-                raise ValidationError("There can only be one record with the same class code and status 'ST'.")
+            if (
+                ClassCode.objects.filter(
+                    class_code=self.class_code, status=self.STUDYING
+                )
+                .exclude(pk=self.pk)
+                .exists()
+            ):
+                raise ValidationError(
+                    "There can only be one record with the same class code and status 'ST'."
+                )
 
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return self.class_code
+
 
 class ClassStudent(models.Model):
     class_code = models.ForeignKey(ClassCode, on_delete=models.CASCADE)
     student = models.ForeignKey(AppUser, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (('class_code', 'student'),)
+        unique_together = (("class_code", "student"),)
         ordering = ["class_code"]
 
 
 class DisciplineName(models.Model):
     discipline_name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self) -> str:
+        return self.discipline_name
 
 
 class DisciplineTeacher(models.Model):
@@ -96,4 +130,4 @@ class DisciplineTeacher(models.Model):
     teacher = models.ForeignKey(AppUser, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (('teacher', 'discipline'),)
+        unique_together = (("teacher", "discipline"),)

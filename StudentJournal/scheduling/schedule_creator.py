@@ -58,8 +58,8 @@ class BellSchedule:
 
         for child in root.iter("lesson"):
             bell_dict = {}
-            bell_dict["start"] = datetime.time.fromisoformat(child[0].text)
-            bell_dict["end"] = datetime.time.fromisoformat(child[1].text)
+            bell_dict["start_time"] = datetime.time.fromisoformat(child[0].text)
+            bell_dict["end_time"] = datetime.time.fromisoformat(child[1].text)
             bell_schedule.append(bell_dict)
 
         bell_schedule = tuple(bell_schedule)
@@ -73,8 +73,8 @@ class BellSchedule:
         root = tree.getroot()
 
         for child, lesson in zip(root.iter("lesson"), bell_ring_struct):
-            child[0].text = lesson["start"].isoformat()
-            child[1].text = lesson["end"].isoformat()
+            child[0].text = lesson["start_time"].isoformat()
+            child[1].text = lesson["end_time"].isoformat()
 
         tree.write(file_path)
 
@@ -107,7 +107,7 @@ class WeekSchedule:
         self.schedule = {weekday: None for weekday in weekdays}
         
         for day in self.schedule.keys():
-            self.schedule[day] = [Lesson(lesson["start"], lesson["end"]) for lesson in BellSchedule.bell_schedule]
+            self.schedule[day] = [Lesson(lesson["start_time"], lesson["end_time"]) for lesson in BellSchedule.bell_schedule]
 
         if class_code != None:
             self.class_code = class_code
