@@ -27,7 +27,7 @@
                         {% for lesson_form in monday_lesson_form %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ lesson_form.start_time.value }}-{{ lesson_form.end_time.value }}</td>
+                            <td>{{ lesson_form.start_time }}{{ lesson_form.end_time }}{{ lesson_form.start_time.value|time:"H:i" }}-{{ lesson_form.end_time.value|time:"H:i" }}</td>
                             <td>{{ lesson_form.discipline }}</td>
                             <td>{{ lesson_form.teacher }}</td>
                         </tr>
@@ -53,7 +53,7 @@
                         {% for lesson_form in tuesday_lesson_form %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ lesson_form.start_time.value }}-{{ lesson_form.end_time.value }}</td>
+                            <td>{{ lesson_form.start_time }}{{ lesson_form.end_time }}{{ lesson_form.start_time.value|time:"H:i" }}-{{ lesson_form.end_time.value|time:"H:i" }}</td>
                             <td>{{ lesson_form.discipline }}</td>
                             <td>{{ lesson_form.teacher }}</td>
                         </tr>
@@ -91,7 +91,7 @@
                         {% for lesson_form in wednesday_lesson_form %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ lesson_form.start_time.value }}-{{ lesson_form.end_time.value }}</td>
+                            <td>{{ lesson_form.start_time }}{{ lesson_form.end_time }}{{ lesson_form.start_time.value|time:"H:i" }}-{{ lesson_form.end_time.value|time:"H:i" }}</td>
                             <td>{{ lesson_form.discipline }}</td>
                             <td>{{ lesson_form.teacher }}</td>
                         </tr>
@@ -117,7 +117,7 @@
                         {% for lesson_form in thursday_lesson_form %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ lesson_form.start_time.value }}-{{ lesson_form.end_time.value }}</td>
+                            <td>{{ lesson_form.start_time }}{{ lesson_form.end_time }}{{ lesson_form.start_time.value|time:"H:i" }}-{{ lesson_form.end_time.value|time:"H:i" }}</td>
                             <td>{{ lesson_form.discipline }}</td>
                             <td>{{ lesson_form.teacher }}</td>
                         </tr>
@@ -145,7 +145,7 @@
                         {% for lesson_form in friday_lesson_form %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ lesson_form.start_time.value }}-{{ lesson_form.end_time.value }}</td>
+                            <td>{{ lesson_form.start_time }}{{ lesson_form.end_time }}{{ lesson_form.start_time.value|time:"H:i" }}-{{ lesson_form.end_time.value|time:"H:i" }}</td>
                             <td>{{ lesson_form.discipline }}</td>
                             <td>{{ lesson_form.teacher }}</td>
                         </tr>
@@ -171,7 +171,7 @@
                         {% for lesson_form in saturday_lesson_form %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ lesson_form.start_time.value }}-{{ lesson_form.end_time.value }}</td>
+                            <td>{{ lesson_form.start_time }}{{ lesson_form.end_time }}{{ lesson_form.start_time.value }}-{{ lesson_form.end_time.value }}</td>
                             <td>{{ lesson_form.discipline }}</td>
                             <td>{{ lesson_form.teacher }}</td>
                         </tr>

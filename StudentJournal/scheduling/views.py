@@ -16,16 +16,15 @@ def create_schedule(request):
         formset_valid = True
         for day in week.schedule.keys():
             formset = LessonScheduleFormset(request.POST, prefix=day)
-
             if not formset.is_valid():
+                print("invalid")
+                print(formset.errors)
                 print(formset.non_form_errors())
                 formset_valid = False
             else:
-                formset_valid = True
+                print("valid")
 
-            formsets_dict[day] = formset
-        
-        print(formsets_dict)
+            formsets_dict[f"{day}_lesson_form"] = formset
 
         if not formset_valid:
             context.update(formsets_dict)
