@@ -5,3 +5,6 @@
 .btn-light{
     background-color: lightgray;
 }
+.table-error{
+    font-size: smaller;
+}

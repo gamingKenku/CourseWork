@@ -1,0 +1,57 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+<form action="/schedule/edit_bell_quarter/" method="post">
+    {% csrf_token %}
+    <div class="container">
+        <div class="row pt-3 pb-3">
+            <div class="col-md-5">
+                <h4>Расписание звонков</h4>
+                <table class="table">
+                    <thead>
+                        <th>#</th>
+                        <th>Начало</th>
+                        <th>Конец</th>
+                    </thead>
+                    <tbody>
+                        {{ bell_formset.management_form }}
+                        {% for form in bell_formset %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ form.start_time }}</td>
+                            <td>{{ form.end_time }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-5">
+                <h4>Расписание четвертей</h4>
+                <table class="table">
+                    <thead>
+                        <th>#</th>
+                        <th>Начало</th>
+                        <th>Конец</th>
+                    </thead>
+                    <tbody>
+                        {{ quarter_formset.management_form }}
+                        {% for form in quarter_formset %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ form.start_date }}</td>
+                            <td>{{ form.end_date }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-light">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

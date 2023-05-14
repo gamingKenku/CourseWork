@@ -1,0 +1,55 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+<div class="container">
+  <div class="row pt-3 pb-3">
+    <div class="col-md-8">
+      <h4>Выберите класс: <div class="d-inline">{{ class_picker }}</div>
+      </h4>
+      <a type="button" id="id_create_schedule" class="d-block btn btn-light mb-1 mt-1" href="">Составить новое
+        расписание</a>
+      <a type="button" id="id_edit_schedule" class="d-block btn btn-light mb-1 mt-1" href="">Изменить расписание</a>
+      <a type="button" id="id_reset_schedule" class="d-block btn btn-light mb-1 mt-1" href="">Сбросить расписание</a>
+    </div>
+  </div>
+</div>
+<script>
+  const classSelect = document.getElementById("id_class_code");
+  const createScheduleLink = document.getElementById("id_create_schedule");
+  const editScheduleLink = document.getElementById("id_edit_schedule");
+  const resetScheduleLink = document.getElementById("id_reset_schedule");
+
+  createScheduleLink.classList.add("disabled")
+  editScheduleLink.classList.add("disabled")
+  resetScheduleLink.classList.add("disabled")
+
+  classSelect.addEventListener("change", () => {
+    const selectedValue = classSelect.value;
+
+    if (selectedValue !== "") {
+      const createScheduleLinkUrl = `/schedule/create/${selectedValue}`;
+      const editScheduleLinkUrl = `/schedule/edit/${selectedValue}`;
+      const resetScheduleLinkUrl = `/some-url/reset/${selectedValue}`;
+
+      createScheduleLink.href = createScheduleLinkUrl;
+      editScheduleLink.href = editScheduleLinkUrl;
+      resetScheduleLink.href = resetScheduleLinkUrl;
+
+      createScheduleLink.classList.remove("disabled");
+      editScheduleLink.classList.remove("disabled");
+      resetScheduleLink.classList.remove("disabled");
+    } else {
+      createScheduleLink.href = "#";
+      editScheduleLink.href = "#";
+      resetScheduleLink.href = "#";
+
+      createScheduleLink.classList.add("disabled");
+      editScheduleLink.classList.add("disabled");
+      resetScheduleLink.classList.add("disabled");
+    }
+  });
+</script>
+{% endblock %}

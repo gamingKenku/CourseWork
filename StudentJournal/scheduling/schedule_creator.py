@@ -1,6 +1,10 @@
 import datetime
 import os
 import xml.etree.ElementTree as ET
+import pytz
+import locale
+
+from django.db.models import Q
 
 from users.models import ClassCode, DisciplineTeacher
 
@@ -10,7 +14,6 @@ from .models import LessonSchedule
 
 
 class QuarterSchedule:
-
     @staticmethod
     def __read_from_file():
         file_path = os.path.join(BASE_DIR, "scheduling\quarter_schedule.xml")
@@ -21,8 +24,8 @@ class QuarterSchedule:
 
         for child in root.iter("quarter"):
             quarter_dict = {}
-            quarter_dict["start"] = datetime.date.fromisoformat(child[0].text)
-            quarter_dict["end"] = datetime.date.fromisoformat(child[1].text)
+            quarter_dict["start_date"] = datetime.date.fromisoformat(child[0].text)
+            quarter_dict["end_date"] = datetime.date.fromisoformat(child[1].text)
             quarter_schedule.append(quarter_dict)
 
         quarter_schedule = tuple(quarter_schedule)
@@ -36,14 +39,27 @@ class QuarterSchedule:
         root = tree.getroot()
 
         for child, quarter in zip(root.iter("quarter"), quarter_struct):
-            child[0].text = quarter["start"].isoformat()
-            child[1].text = quarter["end"].isoformat()
+            child[0].text = quarter["start_date"].isoformat()
+            child[1].text = quarter["end_date"].isoformat()
 
         tree.write(file_path)
 
     @staticmethod
     def initialise_from_file():
         QuarterSchedule.quarter_schedule = QuarterSchedule.__read_from_file()
+
+
+    @staticmethod
+    def get_current_term():
+        today_date = datetime.date.today()
+        current_term = None
+
+        for i in range(0, len(QuarterSchedule.quarter_schedule)):
+            if QuarterSchedule.quarter_schedule[i]["start_date"] >= today_date and QuarterSchedule.quarter_schedule[i]["end_date"] <= today_date:
+                current_term = i
+                break
+    
+        return current_term
 
     quarter_schedule = __read_from_file.__func__()
 
@@ -101,27 +117,67 @@ class Lesson:
             )
 
 
-class WeekSchedule:
-    def __init__(self, class_code=None, post_data=None) -> None:
+class WeekScheduleCreator:
+    def __init__(self, class_code, week_formset_dict=None) -> None:
         weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
         self.schedule = {weekday: None for weekday in weekdays}
+        self.class_code = class_code
         
         for day in self.schedule.keys():
             self.schedule[day] = [Lesson(lesson["start_time"], lesson["end_time"]) for lesson in BellSchedule.bell_schedule]
 
-        if class_code != None:
-            self.class_code = class_code
+        if week_formset_dict != None:
+            for day in self.schedule.keys():
+                formset = week_formset_dict[f"{day}_lesson_form"]
+                for i in range(0, len(self.schedule[day])):
+                    teacher_id = formset[i].cleaned_data["teacher"]
+                    discipline_id = formset[i].cleaned_data["discipline"]
+                    if DisciplineTeacher.objects.filter(teacher=teacher_id, discipline=discipline_id).exists():
+                        discipline_teacher_record = DisciplineTeacher.objects.get(teacher=teacher_id, discipline=discipline_id)
+                        if discipline_teacher_record != None:
+                            self.schedule[day][i].discipline_teacher = discipline_teacher_record        
 
-        if post_data != None:
-            pass
+
+    def reset_db_records_future(self, term: int):
+        start = QuarterSchedule.quarter_schedule[term]["start_date"]
+        end = QuarterSchedule.quarter_schedule[term]["end_date"]
+        today_date = datetime.date.today()
+        current_date = None
+
+        if today_date >= start:
+            start = today_date
+            current_date = today_date
+
+        LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__date__gte=start) & Q(lesson_holding_datetime_start__date__lte=end)).delete()
+        return current_date
         
-    def generate_schedule_records(self, term):
-        current_date = datetime.date.fromisoformat(QuarterSchedule.quarter_schedule[term]["start"])
-        term_end_date = datetime.date.fromisoformat(QuarterSchedule.quarter_schedule[term]["end"])
+
+    def reset_db_records(seld, term: int):
+        start = QuarterSchedule.quarter_schedule[term]["start_date"]
+        end = QuarterSchedule.quarter_schedule[term]["end_date"]
+        records_to_delete = LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__date__gte=start) & Q(lesson_holding_datetime_start__date__lte=end))
+
+        if records_to_delete.exists():
+            records_to_delete.delete()
+            return True
+        else:
+            return False
+
+
+    def reset_and_generate_schedule_records(self, term: int):
+        current_date = self.reset_db_records_future(term)
+
+        if current_date == None:
+            current_date = QuarterSchedule.quarter_schedule[term]["start_date"]
+            
+        term_end_date = QuarterSchedule.quarter_schedule[term]["end_date"]
         batch = []
 
         while current_date <= term_end_date:
             weekday = current_date.strftime("%A").lower()
+            if weekday == "sunday":
+                current_date += datetime.timedelta(days=1)
+                continue
             for lesson in self.schedule[weekday]:
                 if lesson.discipline_teacher != None:
                     batch.append(lesson.get_db_record(current_date, self.class_code))
@@ -130,5 +186,8 @@ class WeekSchedule:
                 LessonSchedule.objects.bulk_create(batch)
                 batch = []
 
-            current_date += datetime.timedelta(1)
+            current_date += datetime.timedelta(days=1)
+        
+        LessonSchedule.objects.bulk_create(batch)
+
 
