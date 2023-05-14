@@ -1,8 +1,6 @@
 import datetime
 import os
 import xml.etree.ElementTree as ET
-import pytz
-import locale
 
 from django.db.models import Q
 

@@ -43,5 +43,6 @@ urlpatterns = [
     path('schedule/edit_bell_quarter/', scheduling.views.bell_quarter_edit),
     path('schedule/', scheduling.views.schedule_menu),
     path('discipline_teacher/<int:discipline_id>/', scheduling.views.get_teachers_for_discipline),
+    path('schedule/student_journal/<str:week_start_date>/<str:week_end_date>/', scheduling.views.student_journal),
     path('', users.views.index)
 ]

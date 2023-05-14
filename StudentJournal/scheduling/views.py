@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from scheduling.schedule_creator import BellSchedule, WeekScheduleCreator, Lesson, QuarterSchedule
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404, HttpResponseBadRequest
 from .forms import LessonSheduleForm, LessonBellScheduleForm, QuartersScheduleForm, ClassPicker
+from .models import LessonSchedule
 from django.forms import formset_factory
 from users.models import ClassCode, AppUser, DisciplineTeacher
 from django.http import JsonResponse
+from django.db.models import Q
+import datetime
 
 
 def create_schedule(request, class_id):
@@ -120,3 +123,34 @@ def schedule_menu(request):
     context["class_picker"] = class_picker
 
     return render(request, "schedule_menu.html", context)
+
+
+def student_journal(request, week_start_date, week_end_date):
+    try:
+        week_start_date = datetime.date.fromisoformat(week_start_date)
+        week_end_date = datetime.date.fromisoformat(week_end_date)
+    except ValueError:
+        return HttpResponseBadRequest("Ошибка в обработке даты.")
+    
+    if not check_week(week_start_date, week_end_date):
+        return Http404("Учебная неделя не найдена.")
+    
+    week_lessons = LessonSchedule.objects.filter(Q())
+
+    context = {}
+
+    
+
+    return render(request, "student_journal.html", context)
+
+
+def check_week(week_start_date: datetime.date, week_end_date: datetime) -> bool:
+    if week_start_date.weekday() != 0 or week_end_date.weekday() != 6:
+        return False
+    
+    period = week_end_date - week_start_date
+
+    if period.days != 7:
+        return False
+    
+    return True
