@@ -1,0 +1,155 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-3 mb-3">
+        <div class="col-md-3">
+            <div>
+                <a type="button" class="btn btn-light bi bi-arrow-left" href="/schedule/student_journal/{{ prev_week_start_date }}/{{ prev_week_end_date }}"></a>
+                <span>{{ current_week_start_date }} - {{ current_week_end_date }}</span>
+                <a type="button" class="btn btn-light bi bi-arrow-right" href="/schedule/student_journal/{{ next_week_start_date }}/{{ next_week_end_date }}"></a>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3 mb-3">
+        <div class="col-md-5">
+            <table class="table border border-dark">
+                <thead>
+                    <tr>
+                        <th class="text-center" colspan="4">Понедельник</th>
+                    </tr>
+                    <tr>
+                        <th style="width:5%">#</th>
+                        <th style="width:10%">Время</th>
+                        <th>Предмет</th>
+                        <th style="width:10%">Оценка</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in monday_lessons %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ lesson.lesson_holding_datetime_start.time|hm_format_time }}-{{ lesson.lesson_holding_datetime_end.time|hm_format_time }}</td>
+                        <td>
+                            <p class="mt-0 mb-0">{{ lesson.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">Домашнее задание</small></p>
+                        </td>
+                        <td class="grade">5</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table class="table border border-dark">
+                <thead>
+                    <tr>
+                        <th class="text-center" colspan="4">Среда</th>
+                    </tr>
+                    <tr>
+                        <th>#</th>
+                        <th>Время</th>
+                        <th>Предмет</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in wednesday_lessons %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ lesson.lesson_holding_datetime_start.time|hm_format_time }}-{{ lesson.lesson_holding_datetime_end.time|hm_format_time }}</td>
+                        <td>{{ lesson.discipline_teacher.discipline }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table class="table border border-dark">
+                <thead>
+                    <tr>
+                        <th class="text-center" colspan="4">Пятница</th>
+                    </tr>
+                    <tr>
+                        <th>#</th>
+                        <th>Время</th>
+                        <th>Предмет</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in friday_lessons %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ lesson.lesson_holding_datetime_start.time|hm_format_time }}-{{ lesson.lesson_holding_datetime_end.time|hm_format_time }}</td>
+                        <td>{{ lesson.discipline_teacher.discipline }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-5">
+            <table class="table border border-dark">
+                <thead>
+                    <tr>
+                        <th class="text-center" colspan="4">Вторник</th>
+                    </tr>
+                    <tr>
+                        <th>#</th>
+                        <th>Время</th>
+                        <th>Предмет</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in tuesday_lessons %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><p>{{ lesson.lesson_holding_datetime_start.time|hm_format_time }}-{{ lesson.lesson_holding_datetime_end.time|hm_format_time }}</p></td>
+                        <td>{{ lesson.discipline_teacher.discipline }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table class="table border border-dark">
+                <thead>
+                    <tr>
+                        <th class="text-center" colspan="4">Четверг</th>
+                    </tr>
+                    <tr>
+                        <th>#</th>
+                        <th>Время</th>
+                        <th>Предмет</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in thurday_lessons %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ lesson.lesson_holding_datetime_start.time|hm_format_time }}-{{ lesson.lesson_holding_datetime_end.time|hm_format_time }}</td>
+                        <td>{{ lesson.discipline_teacher.discipline }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table class="table border border-dark">
+                <thead>
+                    <tr>
+                        <th class="text-center" colspan="4">Суббота</th>
+                    </tr>
+                    <tr>
+                        <th>#</th>
+                        <th>Время</th>
+                        <th>Предмет</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in saturday_lessons %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ lesson.lesson_holding_datetime_start.time|hm_format_time }}-{{ lesson.lesson_holding_datetime_end.time|hm_format_time }}</td>
+                        <td>{{ lesson.discipline_teacher.discipline }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

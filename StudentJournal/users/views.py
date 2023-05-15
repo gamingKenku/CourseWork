@@ -23,7 +23,22 @@ roles_to_russian_dict = {
 
 @login_required(login_url="login/")
 def index(request):
-    return render(request, "index.html")
+    today_date = datetime.date.today()
+    week_start_date = today_date
+    week_end_date = today_date
+
+    while week_start_date.weekday() != 0:
+        week_start_date -= datetime.timedelta(days=1)
+
+    while week_end_date.weekday() != 6:
+        week_end_date += datetime.timedelta(days=1)
+
+    context = {
+        "week_start_date": week_start_date.isoformat(),
+        "week_end_date": week_end_date.isoformat()
+    }
+
+    return render(request, "index.html", context)
 
 
 def login_user(request):

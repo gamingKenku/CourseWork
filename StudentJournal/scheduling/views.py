@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from scheduling.schedule_creator import BellSchedule, WeekScheduleCreator, Lesson, QuarterSchedule
+from scheduling.schedule_creator import BellSchedule, WeekScheduleCreator, Lesson, QuarterSchedule, WeekClassSchedule
 from django.http import HttpResponseRedirect, Http404, HttpResponseBadRequest
 from .forms import LessonSheduleForm, LessonBellScheduleForm, QuartersScheduleForm, ClassPicker
 from .models import LessonSchedule
 from django.forms import formset_factory
-from users.models import ClassCode, AppUser, DisciplineTeacher
+from users.models import ClassCode, AppUser, DisciplineTeacher, ClassStudent
 from django.http import JsonResponse
 from django.db.models import Q
 import datetime
@@ -24,12 +24,7 @@ def create_schedule(request, class_id):
             formset = LessonScheduleFormset(request.POST, prefix=day)
 
             if not formset.is_valid():
-                print("invalid")
-                print(formset.errors)
-                print(formset.non_form_errors())
                 formset_valid = False
-            else:
-                print("valid")
 
             formsets_dict[f"{day}_lesson_form"] = formset
 
@@ -100,6 +95,8 @@ def bell_quarter_edit(request):
             QuarterSchedule.save_to_file(quarter_schedule_formset_data)
             BellSchedule.initialise_from_file()
             QuarterSchedule.initialise_from_file()
+
+            return HttpResponseRedirect("/")
         else:
             print(bell_schedule_formset.errors)
             print(bell_schedule_formset.non_form_errors())
@@ -132,25 +129,24 @@ def student_journal(request, week_start_date, week_end_date):
     except ValueError:
         return HttpResponseBadRequest("Ошибка в обработке даты.")
     
-    if not check_week(week_start_date, week_end_date):
-        return Http404("Учебная неделя не найдена.")
+    if not WeekClassSchedule.check_week(week_start_date, week_end_date):
+        raise Http404("Учебная неделя не найдена.")
     
-    week_lessons = LessonSchedule.objects.filter(Q())
+    user_class_code = ClassStudent.objects.get(student=request.user.id).class_code
+    week_lessons = LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__gte = week_start_date) & Q(lesson_holding_datetime_start__lte = week_end_date) & Q(class_code=user_class_code)).order_by("lesson_holding_datetime_start")
+    context = {f"{weekday}_lessons": [] for weekday in WeekScheduleCreator.WEEKDAYS}
 
-    context = {}
+    for lesson in week_lessons:
+        weekday = lesson.lesson_holding_datetime_start.strftime("%A").lower()
+        context[f"{weekday}_lessons"].append(lesson)
 
-    
+    context["current_week_start_date"] = week_start_date.strftime("%d.%m.%Y")
+    context["current_week_end_date"] = week_end_date.strftime("%d.%m.%Y")
+    context["next_week_start_date"] = (week_start_date + datetime.timedelta(days=7)).isoformat()
+    context["next_week_end_date"] = (week_end_date + datetime.timedelta(days=7)).isoformat()
+    context["prev_week_start_date"] = (week_start_date - datetime.timedelta(days=7)).isoformat()
+    context["prev_week_end_date"] = (week_end_date - datetime.timedelta(days=7)).isoformat()
 
     return render(request, "student_journal.html", context)
 
 
-def check_week(week_start_date: datetime.date, week_end_date: datetime) -> bool:
-    if week_start_date.weekday() != 0 or week_end_date.weekday() != 6:
-        return False
-    
-    period = week_end_date - week_start_date
-
-    if period.days != 7:
-        return False
-    
-    return True

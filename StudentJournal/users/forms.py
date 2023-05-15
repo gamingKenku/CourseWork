@@ -13,7 +13,7 @@ class UserForm(ModelForm):
     def save(self, commit=True):
         instance = super(UserForm, self).save(commit=False)
         instance.age = num_years(self.cleaned_data["date_of_birth"])
-
+        instance.set_password(self.cleaned_data["password"])
         if commit:
             instance.save()
         return instance

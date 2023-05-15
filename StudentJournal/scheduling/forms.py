@@ -47,7 +47,7 @@ class LessonSheduleForm(forms.Form):
 class LessonBellScheduleForm(forms.Form):
     start_time = forms.TimeField()
     end_time = forms.TimeField()
-
+    
     def is_valid(self) -> bool:
         valid = super().is_valid()
         length_valid = True

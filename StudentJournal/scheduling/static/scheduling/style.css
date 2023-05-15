@@ -3,8 +3,14 @@
     margin-bottom: 1rem;
 }
 .btn-light{
-    background-color: lightgray;
+    background-color: rgb(248, 249, 250);
 }
 .table-error{
     font-size: smaller;
+}
+.grade{
+    font-size: larger;
+    font-weight: bolder;
+    text-align: center;
+    vertical-align: middle;
 }
