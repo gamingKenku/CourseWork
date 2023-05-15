@@ -46,7 +46,6 @@ class QuarterSchedule:
     def initialise_from_file():
         QuarterSchedule.quarter_schedule = QuarterSchedule.__read_from_file()
 
-
     @staticmethod
     def get_current_term():
         today_date = datetime.date.today()
@@ -77,7 +76,6 @@ class BellSchedule:
             bell_schedule.append(bell_dict)
 
         bell_schedule = tuple(bell_schedule)
-
         return bell_schedule
 
     @staticmethod
@@ -116,9 +114,10 @@ class Lesson:
 
 
 class WeekScheduleCreator:
+    WEEKDAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+
     def __init__(self, class_code, week_formset_dict=None) -> None:
-        weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-        self.schedule = {weekday: None for weekday in weekdays}
+        self.schedule = {weekday: None for weekday in WeekScheduleCreator.WEEKDAYS}
         self.class_code = class_code
         
         for day in self.schedule.keys():
@@ -133,12 +132,11 @@ class WeekScheduleCreator:
                     if DisciplineTeacher.objects.filter(teacher=teacher_id, discipline=discipline_id).exists():
                         discipline_teacher_record = DisciplineTeacher.objects.get(teacher=teacher_id, discipline=discipline_id)
                         if discipline_teacher_record != None:
-                            self.schedule[day][i].discipline_teacher = discipline_teacher_record        
-
+                            self.schedule[day][i].discipline_teacher = discipline_teacher_record       
 
     def reset_db_records_future(self, term: int):
-        start = QuarterSchedule.quarter_schedule[term]["start_date"]
-        end = QuarterSchedule.quarter_schedule[term]["end_date"]
+        start = QuarterSchedule.quarter_schedule[term]["start_date"] - datetime.timedelta(days=1)
+        end = QuarterSchedule.quarter_schedule[term]["end_date"] + datetime.timedelta(days=1)
         today_date = datetime.date.today()
         current_date = None
 
@@ -146,14 +144,15 @@ class WeekScheduleCreator:
             start = today_date
             current_date = today_date
 
-        LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__date__gte=start) & Q(lesson_holding_datetime_start__date__lte=end)).delete()
+        LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__gte=start) & Q(lesson_holding_datetime_start__lte=end)).delete()
         return current_date
-        
+    
 
     def reset_db_records(seld, term: int):
-        start = QuarterSchedule.quarter_schedule[term]["start_date"]
-        end = QuarterSchedule.quarter_schedule[term]["end_date"]
-        records_to_delete = LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__date__gte=start) & Q(lesson_holding_datetime_start__date__lte=end))
+        start = QuarterSchedule.quarter_schedule[term]["start_date"]+ datetime.timedelta(days=1)
+        end = QuarterSchedule.quarter_schedule[term]["end_date"] + datetime.timedelta(days=1)
+
+        records_to_delete = LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__gte=start) & Q(lesson_holding_datetime_start__lte=end))
 
         if records_to_delete.exists():
             records_to_delete.delete()
@@ -173,9 +172,11 @@ class WeekScheduleCreator:
 
         while current_date <= term_end_date:
             weekday = current_date.strftime("%A").lower()
+
             if weekday == "sunday":
                 current_date += datetime.timedelta(days=1)
                 continue
+
             for lesson in self.schedule[weekday]:
                 if lesson.discipline_teacher != None:
                     batch.append(lesson.get_db_record(current_date, self.class_code))
@@ -188,4 +189,28 @@ class WeekScheduleCreator:
         
         LessonSchedule.objects.bulk_create(batch)
 
+
+class WeekClassSchedule:
+    WEEKDAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+
+    def __init__(self, week_start_date: datetime.date, week_end_date: datetime.date, class_code: ClassCode) -> None:
+        if not WeekClassSchedule.check_week(week_start_date, week_end_date):
+            raise ValueError("Учебная неделя не найдена")
+        
+        self.schedule = {weekday: None for weekday in WeekClassSchedule.WEEKDAYS}
+        lesson_objects = LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__gte = week_start_date) & Q(lesson_holding_datetime_end__lte = week_end_date) & Q(class_code = class_code))
+
+        for lesson_object in lesson_objects:
+            pass
+
+    @staticmethod
+    def check_week(week_start_date: datetime.date, week_end_date: datetime.date) -> bool:
+        if week_start_date.weekday() != 0 or week_end_date.weekday() != 6:
+            return False
+        
+        period = week_end_date - week_start_date
+        if period.days != 6:
+            return False
+        
+        return True
 
