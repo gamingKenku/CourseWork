@@ -9,10 +9,12 @@ class LessonSchedule(models.Model):
     homework = models.CharField(max_length=255, blank=True, null=True)
     lesson_material_text = models.CharField(max_length=255, blank=True, null=True)
     lesson_material_file_path = models.CharField(max_length=255, blank=True, null=True)
+    sequence_num = models.SmallIntegerField()
 
     class Meta:
         unique_together = (('lesson_holding_datetime_start', 'class_code'),
-                           ('lesson_holding_datetime_start', 'discipline_teacher'),)
+                           ('lesson_holding_datetime_start', 'discipline_teacher'),
+                           ('lesson_holding_datetime_start', 'sequence_num'),)
         permissions = (
             ('can_view_student_journal', 'Can view student journal'),
             ('can_view_class_journal', 'Can view class journal'),

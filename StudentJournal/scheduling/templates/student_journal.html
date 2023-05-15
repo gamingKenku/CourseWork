@@ -31,13 +31,20 @@
                 <tbody>
                     {% for lesson in monday_lessons %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ lesson.lesson_holding_datetime_start.time|hm_format_time }}-{{ lesson.lesson_holding_datetime_end.time|hm_format_time }}</td>
+                        <td>{{ lesson|get_item:"sequence_num" }}</td>
+                        <td>{{ lesson|get_item:"start_time"|hm_format_time }}-{{ lesson|get_item:"end_time"|hm_format_time }}</td>
+                        {% if lesson|get_discipline:"lesson_record" != None %}
                         <td>
-                            <p class="mt-0 mb-0">{{ lesson.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0">{{ lesson|get_discipline:"lesson_record" }}</p>
                             <p class="mt-0 mb-0"><small class="fw-lighter">Домашнее задание</small></p>
                         </td>
                         <td class="grade">5</td>
+                        {% else %}
+                        <td>
+                            
+                        </td>
+                        <td class="grade"></td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -48,17 +55,29 @@
                         <th class="text-center" colspan="4">Среда</th>
                     </tr>
                     <tr>
-                        <th>#</th>
-                        <th>Время</th>
+                        <th style="width:5%">#</th>
+                        <th style="width:10%">Время</th>
                         <th>Предмет</th>
+                        <th style="width:10%">Оценка</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for lesson in wednesday_lessons %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ lesson.lesson_holding_datetime_start.time|hm_format_time }}-{{ lesson.lesson_holding_datetime_end.time|hm_format_time }}</td>
-                        <td>{{ lesson.discipline_teacher.discipline }}</td>
+                        <td>{{ lesson|get_item:"sequence_num" }}</td>
+                        <td>{{ lesson|get_item:"start_time"|hm_format_time }}-{{ lesson|get_item:"end_time"|hm_format_time }}</td>
+                        {% if lesson|get_discipline:"lesson_record" != None %}
+                        <td>
+                            <p class="mt-0 mb-0">{{ lesson|get_discipline:"lesson_record" }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">Домашнее задание</small></p>
+                        </td>
+                        <td class="grade">5</td>
+                        {% else %}
+                        <td>
+                            
+                        </td>
+                        <td class="grade"></td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -69,17 +88,30 @@
                         <th class="text-center" colspan="4">Пятница</th>
                     </tr>
                     <tr>
-                        <th>#</th>
-                        <th>Время</th>
+                        <th style="width:5%">#</th>
+                        <th style="width:10%">Время</th>
                         <th>Предмет</th>
+                        <th style="width:10%">Оценка</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for lesson in friday_lessons %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ lesson.lesson_holding_datetime_start.time|hm_format_time }}-{{ lesson.lesson_holding_datetime_end.time|hm_format_time }}</td>
-                        <td>{{ lesson.discipline_teacher.discipline }}</td>
+                        <td>{{ lesson|get_item:"sequence_num" }}</td>
+                        <td>{{ lesson|get_item:"start_time"|hm_format_time }}-{{ lesson|get_item:"end_time"|hm_format_time }}</td>
+                        {% if lesson|get_discipline:"lesson_record" != None %}
+                        <td>
+                            <p class="mt-0 mb-0">{{ lesson|get_discipline:"lesson_record" }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">Домашнее задание</small></p>
+                        </td>
+                        <td class="grade">5</td>
+                        {% else %}
+                        <td>
+                            <p class="mt-0 mb-0"></p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter"></small></p>
+                        </td>
+                        <td class="grade"></td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -92,17 +124,29 @@
                         <th class="text-center" colspan="4">Вторник</th>
                     </tr>
                     <tr>
-                        <th>#</th>
-                        <th>Время</th>
+                        <th style="width:5%">#</th>
+                        <th style="width:10%">Время</th>
                         <th>Предмет</th>
+                        <th style="width:10%">Оценка</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for lesson in tuesday_lessons %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td><p>{{ lesson.lesson_holding_datetime_start.time|hm_format_time }}-{{ lesson.lesson_holding_datetime_end.time|hm_format_time }}</p></td>
-                        <td>{{ lesson.discipline_teacher.discipline }}</td>
+                        <td>{{ lesson|get_item:"sequence_num" }}</td>
+                        <td>{{ lesson|get_item:"start_time"|hm_format_time }}-{{ lesson|get_item:"end_time"|hm_format_time }}</td>
+                        {% if lesson|get_discipline:"lesson_record" != None %}
+                        <td>
+                            <p class="mt-0 mb-0">{{ lesson|get_discipline:"lesson_record" }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">Домашнее задание</small></p>
+                        </td>
+                        <td class="grade">5</td>
+                        {% else %}
+                        <td>
+                            
+                        </td>
+                        <td class="grade"></td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -113,17 +157,29 @@
                         <th class="text-center" colspan="4">Четверг</th>
                     </tr>
                     <tr>
-                        <th>#</th>
-                        <th>Время</th>
+                        <th style="width:5%">#</th>
+                        <th style="width:10%">Время</th>
                         <th>Предмет</th>
+                        <th style="width:10%">Оценка</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for lesson in thurday_lessons %}
+                    {% for lesson in thursday_lessons %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ lesson.lesson_holding_datetime_start.time|hm_format_time }}-{{ lesson.lesson_holding_datetime_end.time|hm_format_time }}</td>
-                        <td>{{ lesson.discipline_teacher.discipline }}</td>
+                        <td>{{ lesson|get_item:"sequence_num" }}</td>
+                        <td>{{ lesson|get_item:"start_time"|hm_format_time }}-{{ lesson|get_item:"end_time"|hm_format_time }}</td>
+                        {% if lesson|get_discipline:"lesson_record" != None %}
+                        <td>
+                            <p class="mt-0 mb-0">{{ lesson|get_discipline:"lesson_record" }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">Домашнее задание</small></p>
+                        </td>
+                        <td class="grade">5</td>
+                        {% else %}
+                        <td>
+                            
+                        </td>
+                        <td class="grade"></td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -134,17 +190,29 @@
                         <th class="text-center" colspan="4">Суббота</th>
                     </tr>
                     <tr>
-                        <th>#</th>
-                        <th>Время</th>
+                        <th style="width:5%">#</th>
+                        <th style="width:10%">Время</th>
                         <th>Предмет</th>
+                        <th style="width:10%">Оценка</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for lesson in saturday_lessons %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ lesson.lesson_holding_datetime_start.time|hm_format_time }}-{{ lesson.lesson_holding_datetime_end.time|hm_format_time }}</td>
-                        <td>{{ lesson.discipline_teacher.discipline }}</td>
+                        <td>{{ lesson|get_item:"sequence_num" }}</td>
+                        <td>{{ lesson|get_item:"start_time"|hm_format_time }}-{{ lesson|get_item:"end_time"|hm_format_time }}</td>
+                        {% if lesson|get_discipline:"lesson_record" != None %}
+                        <td>
+                            <p class="mt-0 mb-0">{{ lesson|get_discipline:"lesson_record" }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">Домашнее задание</small></p>
+                        </td>
+                        <td class="grade">5</td>
+                        {% else %}
+                        <td>
+                            
+                        </td>
+                        <td class="grade"></td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>

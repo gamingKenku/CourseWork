@@ -98,30 +98,33 @@ class BellSchedule:
 
 
 class Lesson:
-    def __init__(self, start, end, discipline_teacher=None) -> None:
+    def __init__(self, start: datetime.time, end: datetime.time, sequence_num: int, discipline_teacher=None) -> None:
         self.start_time = start
         self.end_time = end
         self.discipline_teacher = discipline_teacher
+        self.sequence_num = sequence_num
 
-    def get_db_record(self, lesson_date, class_code):
+    def get_db_record(self, lesson_date: datetime.date, class_code):
         if self.discipline_teacher != None:
             return LessonSchedule(
                 lesson_holding_datetime_start=datetime.datetime.combine(lesson_date, self.start_time),
                 lesson_holding_datetime_end=datetime.datetime.combine(lesson_date, self.end_time),
                 class_code=class_code,
-                discipline_teacher=self.discipline_teacher
+                discipline_teacher=self.discipline_teacher,
+                sequence_num = self.sequence_num
             )
 
 
 class WeekScheduleCreator:
     WEEKDAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
+
     def __init__(self, class_code, week_formset_dict=None) -> None:
         self.schedule = {weekday: None for weekday in WeekScheduleCreator.WEEKDAYS}
         self.class_code = class_code
         
         for day in self.schedule.keys():
-            self.schedule[day] = [Lesson(lesson["start_time"], lesson["end_time"]) for lesson in BellSchedule.bell_schedule]
+            self.schedule[day] = [Lesson(lesson["start_time"], lesson["end_time"], sequence_num) for lesson, sequence_num in zip(BellSchedule.bell_schedule, range(1, len(BellSchedule.bell_schedule) + 1))]
 
         if week_formset_dict != None:
             for day in self.schedule.keys():
@@ -133,6 +136,7 @@ class WeekScheduleCreator:
                         discipline_teacher_record = DisciplineTeacher.objects.get(teacher=teacher_id, discipline=discipline_id)
                         if discipline_teacher_record != None:
                             self.schedule[day][i].discipline_teacher = discipline_teacher_record       
+
 
     def reset_db_records_future(self, term: int):
         start = QuarterSchedule.quarter_schedule[term]["start_date"] - datetime.timedelta(days=1)
@@ -193,15 +197,65 @@ class WeekScheduleCreator:
 class WeekClassSchedule:
     WEEKDAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
-    def __init__(self, week_start_date: datetime.date, week_end_date: datetime.date, class_code: ClassCode) -> None:
+    @staticmethod
+    def get_schedule_as_context(week_start_date: datetime.date, week_end_date: datetime.date, class_code: ClassCode) -> dict:
         if not WeekClassSchedule.check_week(week_start_date, week_end_date):
             raise ValueError("Учебная неделя не найдена")
-        
-        self.schedule = {weekday: None for weekday in WeekClassSchedule.WEEKDAYS}
-        lesson_objects = LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__gte = week_start_date) & Q(lesson_holding_datetime_end__lte = week_end_date) & Q(class_code = class_code))
+
+        schedule = {}        
+        for weekday in WeekClassSchedule.WEEKDAYS:
+            schedule[f"{weekday}_lessons"] = [
+                {
+                    "sequence_num": sequence_num,
+                    "lesson_record": None,
+                    "start_time": lesson["start_time"],
+                    "end_time": lesson["end_time"],
+                }
+                for lesson, sequence_num in zip(BellSchedule.bell_schedule, range(1, len(BellSchedule.bell_schedule) + 1))
+            ]
+
+        lesson_objects = LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__gte = week_start_date) & Q(lesson_holding_datetime_end__lte = week_end_date) & Q(class_code = class_code)).order_by("lesson_holding_datetime_start")
 
         for lesson_object in lesson_objects:
-            pass
+            weekday = lesson_object.lesson_holding_datetime_start.strftime("%A").lower()
+            sequence_num = lesson_object.sequence_num - 1
+            schedule[f"{weekday}_lessons"][sequence_num]["lesson_record"] = lesson_object
+
+        i = 0
+        length = len(schedule["monday_lessons"])
+        while i < length:
+            delete_lessons_flag = True
+
+            for weekday in schedule.keys():
+                if schedule[weekday][i]["lesson_record"] != None:
+                    delete_lessons_flag = False
+                    break
+
+            if delete_lessons_flag:
+                for weekday in schedule.keys():
+                    del schedule[weekday][i]
+                i -= 1
+                length -= 1
+            
+            i += 1
+
+        i = len(schedule["monday_lessons"]) - 1
+        while i >= 0:
+            delete_lessons_flag = True
+
+            for weekday in schedule.keys():
+                if schedule[weekday][i]["lesson_record"] != None:
+                    delete_lessons_flag = False
+                    break
+                
+            if delete_lessons_flag:
+                for weekday in schedule.keys():
+                    del schedule[weekday][i]
+
+            i -= 1
+                    
+        return schedule
+
 
     @staticmethod
     def check_week(week_start_date: datetime.date, week_end_date: datetime.date) -> bool:

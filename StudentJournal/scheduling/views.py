@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from scheduling.schedule_creator import BellSchedule, WeekScheduleCreator, Lesson, QuarterSchedule, WeekClassSchedule
 from django.http import HttpResponseRedirect, Http404, HttpResponseBadRequest
 from .forms import LessonSheduleForm, LessonBellScheduleForm, QuartersScheduleForm, ClassPicker
@@ -123,22 +123,21 @@ def schedule_menu(request):
 
 
 def student_journal(request, week_start_date, week_end_date):
+    user_class_code = get_object_or_404(ClassStudent, student=request.user.id).class_code
+
     try:
         week_start_date = datetime.date.fromisoformat(week_start_date)
         week_end_date = datetime.date.fromisoformat(week_end_date)
     except ValueError:
         return HttpResponseBadRequest("Ошибка в обработке даты.")
     
-    if not WeekClassSchedule.check_week(week_start_date, week_end_date):
+    try:
+        schedule_dict = WeekClassSchedule.get_schedule_as_context(week_start_date, week_end_date, user_class_code)
+    except ValueError:
         raise Http404("Учебная неделя не найдена.")
     
-    user_class_code = ClassStudent.objects.get(student=request.user.id).class_code
-    week_lessons = LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__gte = week_start_date) & Q(lesson_holding_datetime_start__lte = week_end_date) & Q(class_code=user_class_code)).order_by("lesson_holding_datetime_start")
-    context = {f"{weekday}_lessons": [] for weekday in WeekScheduleCreator.WEEKDAYS}
-
-    for lesson in week_lessons:
-        weekday = lesson.lesson_holding_datetime_start.strftime("%A").lower()
-        context[f"{weekday}_lessons"].append(lesson)
+    context = {}
+    context.update(schedule_dict)
 
     context["current_week_start_date"] = week_start_date.strftime("%d.%m.%Y")
     context["current_week_end_date"] = week_end_date.strftime("%d.%m.%Y")
