@@ -23,7 +23,6 @@ def has_group(user, group_name):
 
 @register.filter
 def hm_format_time(value):
-    print(type(value))
     if type(value) == str:
         value = datetime.time.fromisoformat(value)
     return datetime.time.strftime(value, '%H:%M')
