@@ -1,2 +1,4 @@
-1. naive datetime in adding teacher
-2. make student form via formset
+naive datetime in adding teacher - done
+make student form via formset - done
+create schedule bugged asf:
+    проверка по времени учителя проходит успешно, но не должна

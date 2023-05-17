@@ -1,10 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from scheduling.schedule_creator import BellSchedule, WeekScheduleCreator, Lesson, QuarterSchedule, WeekClassSchedule
 from django.http import HttpResponseRedirect, Http404, HttpResponseBadRequest
-from .forms import LessonSheduleForm, LessonBellScheduleForm, QuartersScheduleForm, ClassPicker
+from .forms import LessonSheduleForm, LessonBellScheduleForm, QuartersScheduleForm, ClassPicker, DisciplineNamePicker, TermPicker
 from .models import LessonSchedule
 from django.forms import formset_factory
-from users.models import ClassCode, AppUser, DisciplineTeacher, ClassStudent
+from users.models import ClassCode, AppUser, DisciplineTeacher, ClassStudent, DisciplineName
 from django.http import JsonResponse
 from django.db.models import Q
 import datetime
@@ -114,11 +114,11 @@ def bell_quarter_edit(request):
 
 
 def schedule_menu(request):
-    context = {}
-    class_picker = ClassPicker()
-
-    context["class_picker"] = class_picker
-
+    context = {
+        "class_picker": ClassPicker(),
+        "discipline_picker": DisciplineNamePicker(),
+        "term_picker": TermPicker(),
+    }
     return render(request, "schedule_menu.html", context)
 
 
@@ -147,5 +147,29 @@ def student_journal(request, week_start_date, week_end_date):
     context["prev_week_end_date"] = (week_end_date - datetime.timedelta(days=7)).isoformat()
 
     return render(request, "student_journal.html", context)
+
+
+def class_journal(request, class_id, discipline_id, term):
+    context = {}
+
+    class_code = get_object_or_404(ClassCode, id=class_id)
+    discipline = get_object_or_404(DisciplineName, id=discipline_id)
+    students_records = ClassStudent.objects.filter(class_code=class_code)
+    int_term = int(term) - 1
+
+    term_start_date = QuarterSchedule.quarter_schedule[int_term]["start_date"]
+    term_end_date = QuarterSchedule.quarter_schedule[int_term]["end_date"] + datetime.timedelta(days=1)
+
+    lesson_records = LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__gte=term_start_date) & Q(lesson_holding_datetime_start__lte=term_end_date) & Q(discipline_teacher__discipline=discipline) & Q(class_code=class_code))
+
+    context.update({
+        "students_records": students_records,
+        "discipline": discipline,
+        "class_code": class_code,
+        "lesson_records": lesson_records,
+        "term": term
+    })
+
+    return render(request, "class_journal.html", context)
 
 

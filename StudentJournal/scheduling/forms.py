@@ -72,3 +72,23 @@ class QuartersScheduleForm(forms.Form):
 
 class ClassPicker(forms.Form):
     class_code = forms.ModelChoiceField(ClassCode.objects.all(), label="")
+
+
+class DisciplineNamePicker(forms.Form):
+    discipline_name = forms.ModelChoiceField(DisciplineName.objects.all(), label="")
+
+
+class TermPicker(forms.Form):
+    FIRST = "1"
+    SECOND = "2"
+    THIRD = "3"
+    FOURTH = "4"
+
+    CHOICES = [
+        (FIRST, "Первый"),
+        (SECOND, "Второй"),
+        (THIRD, "Третий"),
+        (FOURTH, "Четвертый"),
+    ]
+
+    term = forms.ChoiceField(choices=CHOICES, label="")

@@ -23,23 +23,28 @@
     {% block content %}
     {% endblock content %}
     <script>
+        function formatDateToYYYYMMDD(date) {
+            let year = date.getFullYear();
+            let month = String(date.getMonth() + 1).padStart(2, '0');
+            let day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         var linkElement = document.getElementById("id_student_journal_link");
         var now = new Date(); 
         var week_start_date = new Date();
         var week_end_date = new Date();
     
         while (week_start_date.getDay() != 1) {
-            console.log(week_start_date.getDay());
             week_start_date.setDate(week_start_date.getDate() - 1);
         }
         while (week_end_date.getDay() != 0) {
-            console.log(week_end_date.getDay());
             week_end_date.setDate(week_end_date.getDate() + 1);
         }
-    
-        week_start_date = week_start_date.toISOString().substring(0, 10);
-        week_end_date = week_end_date.toISOString().substring(0, 10);
-    
+
+        week_start_date = formatDateToYYYYMMDD(week_start_date);
+        week_end_date = formatDateToYYYYMMDD(week_end_date);
+
         var url = "/schedule/student_journal/" + week_start_date + "/" + week_end_date + "/";
     
         linkElement.setAttribute("href", url);

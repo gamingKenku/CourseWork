@@ -5,51 +5,67 @@
 
 {% block content %}
 <div class="container">
-  <div class="row pt-3 pb-3">
-    <div class="col-md-8">
-      <h4>Выберите класс: <div class="d-inline">{{ class_picker }}</div>
-      </h4>
-      <a type="button" id="id_create_schedule" class="d-block btn btn-light mb-1 mt-1" href="">Составить новое
-        расписание</a>
-      <a type="button" id="id_edit_schedule" class="d-block btn btn-light mb-1 mt-1" href="">Изменить расписание</a>
-      <a type="button" id="id_reset_schedule" class="d-block btn btn-light mb-1 mt-1" href="">Сбросить расписание</a>
+    <div class="row pt-3 pb-3">
+        <div class="col-md-8">
+            <h4>Выберите класс: <div class="d-inline">{{ class_picker }}</div>
+            </h4>
+            <a type="button" id="id_create_schedule" class="d-block btn btn-light mb-1 mt-1" href="">Составить новое
+                расписание</a>
+            <a type="button" id="id_open_class_journal" class="d-block btn btn-light mb-1 mt-1" href="">Окрыть классный
+                журнал</a>
+            <p>По предмету:
+            <div class="d-inline">{{ discipline_picker }}</div>
+            </p>
+            <p>За четверть:
+            <div class="d-inline">{{ term_picker }}</div>
+            </p>
+        </div>
     </div>
-  </div>
 </div>
 <script>
-  const classSelect = document.getElementById("id_class_code");
-  const createScheduleLink = document.getElementById("id_create_schedule");
-  const editScheduleLink = document.getElementById("id_edit_schedule");
-  const resetScheduleLink = document.getElementById("id_reset_schedule");
+    $(document).ready(function () {
+        const classSelect = document.getElementById("id_class_code");
+        const disciplineSelect = document.getElementById("id_discipline_name");
+        const termSelect = document.getElementById("id_term");
 
-  createScheduleLink.classList.add("disabled")
-  editScheduleLink.classList.add("disabled")
-  resetScheduleLink.classList.add("disabled")
+        const createScheduleLink = document.getElementById("id_create_schedule");
+        const openClassJournalLink = document.getElementById("id_open_class_journal");
 
-  classSelect.addEventListener("change", () => {
-    const selectedValue = classSelect.value;
+        createScheduleLink.classList.add("disabled")
+        openClassJournalLink.classList.add("disabled")
 
-    if (selectedValue !== "") {
-      const createScheduleLinkUrl = `/schedule/create/${selectedValue}`;
-      const editScheduleLinkUrl = `/schedule/edit/${selectedValue}`;
-      const resetScheduleLinkUrl = `/some-url/reset/${selectedValue}`;
+        classSelect.addEventListener("change", () => {
+            const selectedValue = classSelect.value;
 
-      createScheduleLink.href = createScheduleLinkUrl;
-      editScheduleLink.href = editScheduleLinkUrl;
-      resetScheduleLink.href = resetScheduleLinkUrl;
+            if (selectedValue !== "") {
+                const createScheduleLinkUrl = `/schedule/create/${selectedValue}`;
+                createScheduleLink.href = createScheduleLinkUrl;
+                createScheduleLink.classList.remove("disabled");
+            } else {
+                createScheduleLink.href = "#";
+                createScheduleLink.classList.add("disabled");
+            }
 
-      createScheduleLink.classList.remove("disabled");
-      editScheduleLink.classList.remove("disabled");
-      resetScheduleLink.classList.remove("disabled");
-    } else {
-      createScheduleLink.href = "#";
-      editScheduleLink.href = "#";
-      resetScheduleLink.href = "#";
+        });
 
-      createScheduleLink.classList.add("disabled");
-      editScheduleLink.classList.add("disabled");
-      resetScheduleLink.classList.add("disabled");
-    }
-  });
+        function updateCreateScheduleLink() {
+            var classValue = $("#id_class_code").val();
+            var disciplineValue = $("#id_discipline_name").val();
+            var termValue = $("#id_term").val();
+
+            if (classValue && disciplineValue && termValue) {
+                var hrefValue = "/schedule/class_journal/" + classValue + "/" + disciplineValue + "/" + termValue + "/";
+                $("#id_open_class_journal").attr("href", hrefValue);
+                $("#id_open_class_journal").removeClass("disabled");
+            } else {
+                $("#id_open_class_journal").attr("href", "");
+                $("#id_open_class_journal").addClass("disabled");
+            }
+        }
+
+        $("#id_class_code, #id_discipline_name, #id_term").change(function () {
+            updateCreateScheduleLink();
+        });
+    });
 </script>
 {% endblock %}

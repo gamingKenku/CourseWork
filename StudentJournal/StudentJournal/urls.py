@@ -44,5 +44,6 @@ urlpatterns = [
     path('schedule/', scheduling.views.schedule_menu),
     path('discipline_teacher/<int:discipline_id>/', scheduling.views.get_teachers_for_discipline),
     path('schedule/student_journal/<str:week_start_date>/<str:week_end_date>/', scheduling.views.student_journal),
+    path('schedule/class_journal/<str:class_id>/<str:discipline_id>/<str:term>/', scheduling.views.class_journal),
     path('', users.views.index)
 ]

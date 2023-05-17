@@ -14,3 +14,37 @@
     text-align: center;
     vertical-align: middle;
 }
+.text-vertical{
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+    text-align: left;
+}
+.btn-grades-nonatt{
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+}
+.input-grades-nonatt{
+    width: 100%;
+    height: 100%;
+    vertical-align: middle;
+}
+th.class-journal{
+    width: 25px;
+}
+td.class-journal{
+    width: 40px;
+    height: 40px;
+    border-right-width: 1px;
+    align-items: center;
+}
+td.class-journal.student-name{
+    width: 200px;
+    height: 25px;
+    vertical-align: middle;
+}
+table.class-journal {
+    table-layout: auto;
+    width: auto;
+    overflow-x: scroll;
+}

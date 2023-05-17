@@ -5,12 +5,54 @@
 
 {% block content %}
 <div class="container">
-    <div class="row">
-        <div class="col">
-            <div class="table">
-                
+    <form method="post" action="/schedule/class_journal/{{ class_code.id }}/{{ discipline.id }}/{{ term }}/">
+        <div class="row mt-3 mb-3">
+            <div class="col-md-11">
+                <table class="table class-journal">
+                    <thead>
+                        <th>#</th>
+                        <th></th>
+                        {% for lesson_record in lesson_records %}
+                        <th class="text-vertical class-journal">{{ lesson_record.lesson_holding_datetime_start.date|date:"d.m.y" }}</th>
+                        {% endfor %}
+                    </thead>
+                    <tbody id="id_button-container">
+                        {% for students_record in students_records %}
+                        <tr>
+                            <td class="p-0 class-journal">{{ forloop.counter }}</td>
+                            <td class="p-0 class-journal student-name">{{ students_record.student }}</td>
+                            {% for lesson_record in lesson_records %}
+                            <td class="p-0 class-journal">
+                                <button data-student_id="{{ students_record.student.id }}"
+                                    data-lesson_id="{{ lesson_record.id }}"
+                                    class="btn btn-light btn-grades-nonatt">...</button>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-1">
+                <button class="btn btn-light" type="submit">Сохранить</button>
             </div>
         </div>
-    </div>
+    </form>
 </div>
+<script>
+    const buttonContainer = document.getElementById('id_button-container');
+    buttonContainer.addEventListener('click', function (event) {
+        var target = event.target;
+        if (target.classList.contains('btn-grades-nonatt')) {
+            console.log("done");
+            var input = document.createElement('input');
+            input.classList.add("input-grades-nonatt");
+            input.classList.add("text-center");
+            input.name = "grade_nonatt-" + target.getAttribute("data-student_id") + "-" + target.getAttribute("data-lesson_id");
+            input.type = 'text';
+            input.setAttribute("maxlength", 2);
+            target.parentNode.replaceChild(input, target);
+        }
+    });
+</script>
 {% endblock %}
