@@ -149,27 +149,5 @@ def student_journal(request, week_start_date, week_end_date):
     return render(request, "student_journal.html", context)
 
 
-def class_journal(request, class_id, discipline_id, term):
-    context = {}
-
-    class_code = get_object_or_404(ClassCode, id=class_id)
-    discipline = get_object_or_404(DisciplineName, id=discipline_id)
-    students_records = ClassStudent.objects.filter(class_code=class_code)
-    int_term = int(term) - 1
-
-    term_start_date = QuarterSchedule.quarter_schedule[int_term]["start_date"]
-    term_end_date = QuarterSchedule.quarter_schedule[int_term]["end_date"] + datetime.timedelta(days=1)
-
-    lesson_records = LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__gte=term_start_date) & Q(lesson_holding_datetime_start__lte=term_end_date) & Q(discipline_teacher__discipline=discipline) & Q(class_code=class_code))
-
-    context.update({
-        "students_records": students_records,
-        "discipline": discipline,
-        "class_code": class_code,
-        "lesson_records": lesson_records,
-        "term": term
-    })
-
-    return render(request, "class_journal.html", context)
 
 

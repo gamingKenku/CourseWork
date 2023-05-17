@@ -38,6 +38,13 @@ td.class-journal{
     border-right-width: 1px;
     align-items: center;
 }
+td.class-journal.number{
+    width: 20px;
+    height: 40px;
+    border-right-width: 1px;
+    align-items: left;
+    vertical-align: middle;
+}
 td.class-journal.student-name{
     width: 200px;
     height: 25px;
