@@ -4,6 +4,11 @@
 {% load filters %}
 
 {% block content %}
+<div hidden id="id_existing_grades_nonatt">
+    {% for grade_nonatt in existing_grades_nonatt %}
+    <input name="{{ grade_nonatt.0 }}" value="{{ grade_nonatt.1 }}" maxlength="2" type="text">
+    {% endfor %}
+</div>
 <div class="container">
     <form method="post" action="/schedule/class_journal/{{ class_code.id }}/{{ discipline.id }}/{{ term }}/" autocomplete="off">
         {% csrf_token %}
@@ -25,13 +30,7 @@
                             <td class="p-0 class-journal student-name"><a href="/users/{{ students_record.student.id }}/">{{ students_record.student }}</a></td>
                             {% for lesson_record in lesson_records %}
                             <td class="p-0 class-journal">
-                                {% with key_name="grade_nonatt-"|add:students_record.student.id|add:"-"|add:lesson_record.id %}
-                                    {% if key_name %}
-                                    <input class="input-grades-nonatt text-center" name="{{ key_name }}" type="text" maxlength="2" value="{{ key_name }}">
-                                    {% else %}
-                                    <button data-student_id="{{ students_record.student.id }}" data-lesson_id="{{ lesson_record.id }}" class="btn btn-light btn-grades-nonatt">...</button>
-                                    {% endif %}
-                                {% endwith %}
+                                <button id="id_btn_grade_nonatt-{{students_record.student.id}}-{{lesson_record.id}}" name="btn_grade_nonatt-{{students_record.student.id}}-{{lesson_record.id}}" data-student_id="{{ students_record.student.id }}" data-lesson_id="{{ lesson_record.id }}" class="btn btn-light btn-grades-nonatt">...</button>
                             </td>
                             {% endfor %}
                         </tr>
@@ -47,10 +46,10 @@
 </div>
 <script>
     const buttonContainer = document.getElementById('id_button-container');
+
     buttonContainer.addEventListener('click', function (event) {
         var target = event.target;
         if (target.classList.contains('btn-grades-nonatt')) {
-            console.log("done");
             var input = document.createElement('input');
             input.classList.add("input-grades-nonatt");
             input.classList.add("text-center");
@@ -60,5 +59,32 @@
             target.parentNode.replaceChild(input, target);
         }
     });
+
+    const existingGradesNonattContainer = document.getElementById('id_existing_grades_nonatt');
+    const grades_nonatt_inputs = existingGradesNonattContainer.childNodes;
+    console.log(existingGradesNonattContainer);
+    console.log(grades_nonatt_inputs);
+
+    for (let i = 0; i < grades_nonatt_inputs.length; i++) {
+        if (grades_nonatt_inputs[i].tagName === "INPUT") {
+            console.log(grades_nonatt_inputs[i].tagName);
+            console.log(grades_nonatt_inputs[i].name);
+            button_id = "id_btn_" + grades_nonatt_inputs[i].name;
+            console.log(button_id);
+            grades_nonatt_button = document.getElementById(button_id);
+
+            console.log(grades_nonatt_button.name);
+
+            replacing_input = document.createElement("input");
+            replacing_input.classList.add("input-grades-nonatt");
+            replacing_input.classList.add("text-center");
+            replacing_input.name = "grade_nonatt-" + grades_nonatt_button.getAttribute("data-student_id") + "-" + grades_nonatt_button.getAttribute("data-lesson_id");
+            replacing_input.type = 'text';
+            replacing_input.setAttribute("maxlength", 2);
+            replacing_input.value = grades_nonatt_inputs[i].value;
+
+            grades_nonatt_button.replaceWith(replacing_input);
+        }
+    }
 </script>
 {% endblock %}

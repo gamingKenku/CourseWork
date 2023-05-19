@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, Http404
 from scheduling.models import LessonSchedule
 from scheduling.schedule_creator import QuarterSchedule
 from users.models import ClassCode, ClassStudent, DisciplineName, AppUser
-from .models import Grade, NonAttendance
+from .models import LessonResults;
 
 def class_journal(request, class_id, discipline_id, term):
     context = {}
@@ -18,7 +18,7 @@ def class_journal(request, class_id, discipline_id, term):
     discipline = get_object_or_404(DisciplineName, id=discipline_id)
     students_records = ClassStudent.objects.filter(class_code=class_code)
     int_term = int(term) - 1
-    existing_grades_nonattt = get_grades_nonatt_as_dict(students_records, int_term)
+    existing_grades_nonatt = get_grades_nonatt_as_dict(students_records, int_term)
 
     if request.method == "POST":
         post_data = request.POST.copy()
@@ -26,7 +26,7 @@ def class_journal(request, class_id, discipline_id, term):
 
         if grades_nonatt_is_valid(post_data):
             filtered_grades_nonatt = {
-                key: value for key, value in post_data.items() if key not in existing_grades_nonattt.keys()
+                key: value for key, value in post_data.items() if key not in existing_grades_nonatt.keys()
             }
             print(filtered_grades_nonatt)
 
@@ -36,19 +36,23 @@ def class_journal(request, class_id, discipline_id, term):
                 student = AppUser.objects.get(id=int(data[1]))
                 lesson = LessonSchedule.objects.get(id=int(data[2]))
 
-                if grade_nonatt[1] in GRADES:
+                if grade_nonatt[1] == "-":
+                    LessonResults.objects.filter(student=student, lesson=lesson).delete()
+                elif grade_nonatt[1] in GRADES:
                     grade = int(grade_nonatt[1])
-                    Grade.objects.create(student=student, lesson=lesson, grade=grade)
+                    LessonResults.objects.create(student=student, lesson=lesson, grade=grade)
                 else:
                     non_attendance_reason = grade_nonatt[1]
-                    NonAttendance.objects.create(student=student, lesson=lesson, non_attendance_reason=non_attendance_reason)
+                    LessonResults.objects.create(student=student, lesson=lesson, non_attendance_reason=non_attendance_reason)
 
             return HttpResponseRedirect("/")
         else:
-            context.update(post_data)
+            existing_grades_nonatt = list(post_data.items())
+            context.update({"existing_grades_nonatt": existing_grades_nonatt})
             print("grades and nonatt non valid")
     else:
-        context.update(existing_grades_nonattt)
+        existing_grades_nonatt = list(existing_grades_nonatt.items())
+        context.update({"existing_grades_nonatt": existing_grades_nonatt})
 
     term_start_date = QuarterSchedule.quarter_schedule[int_term]["start_date"]
     term_end_date = QuarterSchedule.quarter_schedule[int_term]["end_date"] + datetime.timedelta(days=1)
@@ -73,7 +77,7 @@ def get_grades_nonatt_as_dict(students_records, term: int) -> dict:
     term_end_date = QuarterSchedule.quarter_schedule[term]["end_date"] + datetime.timedelta(days=1)
     students_ids = students_records.values("student")
 
-    grades = Grade.objects.filter(
+    grades = LessonResults.objects.filter(
         Q(lesson__lesson_holding_datetime_start__gte=term_start_date) & 
         Q(lesson__lesson_holding_datetime_start__lte=term_end_date) & 
         Q(student_id__in = students_ids)
@@ -82,18 +86,6 @@ def get_grades_nonatt_as_dict(students_records, term: int) -> dict:
     res.update(
         {
             f"grade_nonatt-{grade.student.id}-{grade.lesson.id}": grade.grade for grade in grades
-        }
-    )
-
-    non_attendances = NonAttendance.objects.filter(
-        Q(lesson__lesson_holding_datetime_start__gte=term_start_date) & 
-        Q(lesson__lesson_holding_datetime_start__lte=term_end_date) & 
-        Q(student_id__in = students_ids)
-    )
-
-    res.update(
-        {
-            f"grade_nonatt-{non_attendance.student.id}-{non_attendance.lesson.id}": non_attendance.non_attendance_reason for non_attendance in non_attendances
         }
     )
 
@@ -109,7 +101,7 @@ def grades_nonatt_is_valid(post_data) -> bool:
     )
 
     for item in post_data.items():
-        if item[1] not in GRADES and item[1] not in NON_ATTENDANCE_REASONS:
+        if item[1] not in GRADES and item[1] not in NON_ATTENDANCE_REASONS and item[1] != "-":
             return False
         
     return True
