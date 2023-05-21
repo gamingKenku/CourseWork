@@ -92,3 +92,7 @@ class TermPicker(forms.Form):
     ]
 
     term = forms.ChoiceField(choices=CHOICES, label="")
+
+
+class LessonMaterialUploadForm(forms.Form):
+    materials_file = forms.FileField(label="Материалы к уроку", required=False, widget=forms.FileInput(attrs={"id": "id-materials-file"}))

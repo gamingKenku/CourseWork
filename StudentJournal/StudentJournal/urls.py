@@ -44,6 +44,10 @@ urlpatterns = [
     path('schedule/', scheduling.views.schedule_menu),
     path('discipline_teacher/<int:discipline_id>/', scheduling.views.get_teachers_for_discipline),
     path('schedule/student_journal/<str:week_start_date>/<str:week_end_date>/', scheduling.views.student_journal),
+    path('download_lesson_materials/<int:lesson_id>/', grades_nonattendance.views.download_lesson_materials),
+    path('delete_lesson_materials/<int:lesson_id>/', grades_nonattendance.views.delete_lesson_materials),
     path('schedule/class_journal/<str:class_id>/<str:discipline_id>/<str:term>/', grades_nonattendance.views.class_journal),
+    path('schedule/get_lesson/<int:lesson_id>/', grades_nonattendance.views.get_lesson),
+    path('schedule/set_homework/<int:lesson_id>/', grades_nonattendance.views.set_homework),
     path('', users.views.index)
 ]

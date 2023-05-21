@@ -4,33 +4,52 @@
 {% load filters %}
 
 {% block content %}
-<div hidden id="id_existing_grades_nonatt">
+<div hidden id="id-existing-grades-nonatt">
     {% for grade_nonatt in existing_grades_nonatt %}
     <input name="{{ grade_nonatt.0 }}" value="{{ grade_nonatt.1 }}" maxlength="2" type="text">
     {% endfor %}
+</div>
+<div id="id-overlay">
+    <div class="p-3" id="id-homework-window">
+        <button style="float: right;" onclick="homework_window_off()" class="btn btn-light float-right"><i class="bi bi-x"></i></button>
+        <p>Урок <span id="id-homework-date">...</span> по предмету <span id="id-homework-discipline">"{{ discipline }}"</span> у класса <span id="id-homework-class">{{ class_code }}</span></p>
+        <p>Домашнее задание:</p>
+        <form enctype="multipart/form-data" id="id-homework-form" method="post" action="" autocomplete="off">
+            {% csrf_token %}
+            <textarea style="resize: none;" rows="12" class="w-100" type="text" name="homework" id="id-homework-input"></textarea>
+            {{ lesson_material_form }}
+            <a id="id-lesson-materials-download-link" href=""></a>
+            <button class="btn btn-light mt-3 mb-3" type="submit">Сохранить</button>
+            <button class="btn btn-light mt-3 mb-3" id="id-lesson-materials-delete-button">Удалить</button>
+        </form>
+    </div>
 </div>
 <div class="container">
     <form method="post" action="/schedule/class_journal/{{ class_code.id }}/{{ discipline.id }}/{{ term }}/" autocomplete="off">
         {% csrf_token %}
         <div class="row mt-3 mb-3">
-            <h4>Классный журнал <a href="/classes/{{ class_code.id }}/">{{ class_code }}</a> за четверть {{ term }} по предмету {{ discipline }}.</h4>
+            <h4>Классный журнал <a href="/classes/{{ class_code.id }}/">{{ class_code }}</a> за четверть {{ term }} по предмету "{{ discipline }}".</h4>
             <div class="col-md-11">
                 <table class="table table-striped table-bordered class-journal">
                     <thead>
                         <th>#</th>
                         <th></th>
                         {% for lesson_record in lesson_records %}
-                        <th class="text-vertical class-journal">{{ lesson_record.lesson_holding_datetime_start.date|date:"d.m.y" }}</th>
+                        <th onclick="homework_window_on('{{ lesson_record.id }}')" class="text-vertical class-journal">{{ lesson_record.lesson_holding_datetime_start.date|date:"d.m.y" }}
+                            {% if lesson_record.homework != None %}
+                            <i class="bi bi-book class-journal"></i>
+                            {% endif %}
+                        </th>
                         {% endfor %}
                     </thead>
-                    <tbody id="id_button-container">
+                    <tbody id="id-button-container">
                         {% for students_record in students_records %}
                         <tr>
                             <td class="p-0 class-journal number">{{ forloop.counter }}</td>
                             <td class="p-0 class-journal student-name"><a href="/users/{{ students_record.student.id }}/">{{ students_record.student }}</a></td>
                             {% for lesson_record in lesson_records %}
                             <td class="p-0 class-journal">
-                                <button id="id_btn_grade_nonatt-{{students_record.student.id}}-{{lesson_record.id}}" name="btn_grade_nonatt-{{students_record.student.id}}-{{lesson_record.id}}" data-student_id="{{ students_record.student.id }}" data-lesson_id="{{ lesson_record.id }}" class="btn btn-light btn-grades-nonatt">...</button>
+                                <button id="id-btn-grade-nonatt-{{students_record.student.id}}-{{lesson_record.id}}" name="btn-grade-nonatt-{{students_record.student.id}}-{{lesson_record.id}}" data-student_id="{{ students_record.student.id }}" data-lesson_id="{{ lesson_record.id }}" class="btn btn-light btn-grades-nonatt">...</button>
                             </td>
                             {% endfor %}
                         </tr>
@@ -45,7 +64,7 @@
     </form>
 </div>
 <script>
-    const buttonContainer = document.getElementById('id_button-container');
+    const buttonContainer = document.getElementById('id-button-container');
 
     buttonContainer.addEventListener('click', function (event) {
         var target = event.target;
@@ -60,20 +79,13 @@
         }
     });
 
-    const existingGradesNonattContainer = document.getElementById('id_existing_grades_nonatt');
+    const existingGradesNonattContainer = document.getElementById('id-existing-grades-nonatt');
     const grades_nonatt_inputs = existingGradesNonattContainer.childNodes;
-    console.log(existingGradesNonattContainer);
-    console.log(grades_nonatt_inputs);
 
     for (let i = 0; i < grades_nonatt_inputs.length; i++) {
         if (grades_nonatt_inputs[i].tagName === "INPUT") {
-            console.log(grades_nonatt_inputs[i].tagName);
-            console.log(grades_nonatt_inputs[i].name);
-            button_id = "id_btn_" + grades_nonatt_inputs[i].name;
-            console.log(button_id);
+            button_id = "id-btn-" + grades_nonatt_inputs[i].name;
             grades_nonatt_button = document.getElementById(button_id);
-
-            console.log(grades_nonatt_button.name);
 
             replacing_input = document.createElement("input");
             replacing_input.classList.add("input-grades-nonatt");
@@ -85,6 +97,79 @@
 
             grades_nonatt_button.replaceWith(replacing_input);
         }
+    }
+
+    existingGradesNonattContainer.remove();
+
+    const homework_window = document.getElementById("id-homework-window");
+    const homework_input = document.getElementById("id-homework-input");
+    const homework_date = document.getElementById("id-homework-date");
+    const homework_form = document.getElementById("id-homework-form");
+    const lesson_materials_input = document.getElementById("id-materials-file");
+    const lesson_materials_link = document.getElementById("id-lesson-materials-download-link");
+    const delete_lesson_materials_button = document.getElementById("id-lesson-materials-delete-button");
+    const overlay = document.getElementById("id-overlay");
+
+
+    function homework_window_on(lesson_id) { 
+        $.ajax({
+            url: "/schedule/get_lesson/" + lesson_id + "/",
+            success: function (response) {
+                let lesson_date = response.lesson_record.lesson_date;
+                let homework = response.lesson_record.homework;
+                let lesson_materials_filename = response.lesson_record.lesson_materials;
+
+                if (lesson_materials_filename) {
+                    lesson_materials_input.style.display = "none";
+                    lesson_materials_input.disabled = true;
+
+                    lesson_materials_link.innerText = lesson_materials_filename;
+                    lesson_materials_link.style.display = "block";
+                    lesson_materials_link.href = "/download_lesson_materials/" + lesson_id + "/";
+                    
+                    delete_lesson_materials_button.style.display = "inline-block";
+                    delete_lesson_materials_button.onclick = function() {lesson_materials_delete(lesson_id);};
+                }
+
+                homework_form.action = "/schedule/set_homework/" + lesson_id + "/";
+                homework_date.innerText = lesson_date;
+                homework_input.innerText = homework;
+
+                overlay.style.display = "block";
+            },
+            error: function () {
+                alert('Ошибка в загрузке урока.');
+            }
+        })
+    }
+
+    function homework_window_off() {
+        homework_input.innerText = "";
+        homework_date.innerText = "..."
+        homework_form.action = "";
+
+        lesson_materials_input.style.display = "block";
+        lesson_materials_input.disabled = false;
+
+        lesson_materials_link.innerText = "";
+        lesson_materials_link.style.display = "none";
+        lesson_materials_link.href = "";
+        delete_lesson_materials_button.style.display = "none";
+        delete_lesson_materials_button.onclick = "";
+
+        overlay.style.display = "none";
+    }
+
+    function lesson_materials_delete(lesson_id) {
+        $.ajax({
+            url: "/delete_lesson_materials/" + lesson_id + "/",
+            success: function (response) {
+                homework_window_on(lesson_id);
+            },
+            error: function (response) {
+                alert("Ошибка в удалении материалов к уроку.");
+            }
+        })
     }
 </script>
 {% endblock %}

@@ -16,6 +16,34 @@ def get_discipline(dictionary, key):
     return dictionary.get(key).discipline_teacher.discipline
 
 
+@register.filter
+def get_grade(lesson):
+    try:
+        grade = lesson.lesson_to_results.get().grade
+    except:
+        grade = None
+    return grade
+
+
+@register.filter
+def get_nonatt_reason(lesson):
+    try:
+        reason = lesson.lesson_to_results.get().non_attendance_reason
+    except:
+        reason = None
+    return reason
+
+
+@register.filter
+def get_homework(dictionary, key):
+    return dictionary.get(key).homework
+
+
+@register.filter
+def get_id(dictionary, key):
+    return dictionary.get(key).id
+
+
 @register.filter(name='has_group') 
 def has_group(user, group_name):
     return user.groups.filter(name=group_name).exists()

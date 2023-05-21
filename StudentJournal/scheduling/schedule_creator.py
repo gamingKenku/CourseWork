@@ -203,14 +203,15 @@ class WeekClassSchedule:
             raise ValueError("Учебная неделя не найдена")
 
         schedule = {}        
+
         for weekday in WeekClassSchedule.WEEKDAYS:
             schedule[f"{weekday}_lessons"] = [
-                {
-                    "sequence_num": sequence_num,
-                    "lesson_record": None,
-                    "start_time": lesson["start_time"],
-                    "end_time": lesson["end_time"],
-                }
+                [
+                    sequence_num, 
+                    None,
+                    lesson["start_time"],
+                    lesson["end_time"]
+                ]
                 for lesson, sequence_num in zip(BellSchedule.bell_schedule, range(1, len(BellSchedule.bell_schedule) + 1))
             ]
 
@@ -219,7 +220,7 @@ class WeekClassSchedule:
         for lesson_object in lesson_objects:
             weekday = lesson_object.lesson_holding_datetime_start.strftime("%A").lower()
             sequence_num = lesson_object.sequence_num - 1
-            schedule[f"{weekday}_lessons"][sequence_num]["lesson_record"] = lesson_object
+            schedule[f"{weekday}_lessons"][sequence_num][1] = lesson_object        
 
         i = 0
         length = len(schedule["monday_lessons"])
@@ -227,7 +228,7 @@ class WeekClassSchedule:
             delete_lessons_flag = True
 
             for weekday in schedule.keys():
-                if schedule[weekday][i]["lesson_record"] != None:
+                if schedule[weekday][i][1] != None:
                     delete_lessons_flag = False
                     break
 
@@ -236,6 +237,8 @@ class WeekClassSchedule:
                     del schedule[weekday][i]
                 i -= 1
                 length -= 1
+            else:
+                break
             
             i += 1
 
@@ -244,13 +247,15 @@ class WeekClassSchedule:
             delete_lessons_flag = True
 
             for weekday in schedule.keys():
-                if schedule[weekday][i]["lesson_record"] != None:
+                if schedule[weekday][i][1] != None:
                     delete_lessons_flag = False
                     break
                 
             if delete_lessons_flag:
                 for weekday in schedule.keys():
                     del schedule[weekday][i]
+            else:
+                break
 
             i -= 1
                     

@@ -4,6 +4,16 @@
 {% load filters %}
 
 {% block content %}
+<div id="id-overlay">
+    <div class="p-3" id="id-homework-window">
+        <button style="float: right;" onclick="homework_window_off()" class="btn btn-light float-right"><i class="bi bi-x"></i></button>
+        <p>Урок <span id="id-homework-date">...</span> по предмету "<span id="id-homework-discipline">...</span>" у класса <span id="id_homework_class">{{ class_code }}</span></p>
+        <p>Домашнее задание:</p>
+        <p id="id-homework-text">...</p>
+        <p>Материалы к уроку:</p>
+        <a id="id-lesson-materials-download-link" href=""></a>
+    </div>
+</div>
 <div class="container">
     <div class="row mt-3 mb-3">
         <div class="col-md-3">
@@ -16,7 +26,7 @@
     </div>
     <div class="row mt-3 mb-3">
         <div class="col-md-5">
-            <table class="table border border-dark">
+            <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
                         <th class="text-center" colspan="4">Понедельник</th>
@@ -30,26 +40,31 @@
                 </thead>
                 <tbody>
                     {% for lesson in monday_lessons %}
-                    <tr>
-                        <td>{{ lesson|get_item:"sequence_num" }}</td>
-                        <td>{{ lesson|get_item:"start_time"|hm_format_time }}-{{ lesson|get_item:"end_time"|hm_format_time }}</td>
-                        {% if lesson|get_discipline:"lesson_record" != None %}
+                    <tr class="student-journal" onclick="homework_window_on('{{lesson.1.id }}')">
+                        <td>{{ lesson.0 }}</td>
+                        <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
+                        {% if lesson.1 != None %}
                         <td>
-                            <p class="mt-0 mb-0">{{ lesson|get_discipline:"lesson_record" }}</p>
-                            <p class="mt-0 mb-0"><small class="fw-lighter">Домашнее задание</small></p>
+                            <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
                         </td>
-                        <td class="grade">5</td>
+                        <td class="grade">
+                            {{ lesson.1|get_grade|default:"" }}
+                            {{ lesson.1|get_nonatt_reason|default:"" }}
+                        </td>
                         {% else %}
                         <td>
                             
                         </td>
-                        <td class="grade"></td>
+                        <td class="grade">
+
+                        </td>
                         {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            <table class="table border border-dark">
+            <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
                         <th class="text-center" colspan="4">Среда</th>
@@ -63,26 +78,31 @@
                 </thead>
                 <tbody>
                     {% for lesson in wednesday_lessons %}
-                    <tr>
-                        <td>{{ lesson|get_item:"sequence_num" }}</td>
-                        <td>{{ lesson|get_item:"start_time"|hm_format_time }}-{{ lesson|get_item:"end_time"|hm_format_time }}</td>
-                        {% if lesson|get_discipline:"lesson_record" != None %}
+                    <tr class="student-journal" onclick="homework_window_on('{{lesson.1.id }}')">
+                        <td>{{ lesson.0 }}</td>
+                        <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
+                        {% if lesson.1 != None %}
                         <td>
-                            <p class="mt-0 mb-0">{{ lesson|get_discipline:"lesson_record" }}</p>
-                            <p class="mt-0 mb-0"><small class="fw-lighter">Домашнее задание</small></p>
+                            <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
                         </td>
-                        <td class="grade">5</td>
+                        <td class="grade">
+                            {{ lesson.1|get_grade|default:"" }}
+                            {{ lesson.1|get_nonatt_reason|default:"" }}
+                        </td>
                         {% else %}
                         <td>
                             
                         </td>
-                        <td class="grade"></td>
+                        <td class="grade">
+
+                        </td>
                         {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            <table class="table border border-dark">
+            <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
                         <th class="text-center" colspan="4">Пятница</th>
@@ -96,21 +116,25 @@
                 </thead>
                 <tbody>
                     {% for lesson in friday_lessons %}
-                    <tr>
-                        <td>{{ lesson|get_item:"sequence_num" }}</td>
-                        <td>{{ lesson|get_item:"start_time"|hm_format_time }}-{{ lesson|get_item:"end_time"|hm_format_time }}</td>
-                        {% if lesson|get_discipline:"lesson_record" != None %}
+                    <tr class="student-journal" onclick="homework_window_on('{{lesson.1.id }}')">
+                        <td>{{ lesson.0 }}</td>
+                        <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
+                        {% if lesson.1 != None %}
                         <td>
-                            <p class="mt-0 mb-0">{{ lesson|get_discipline:"lesson_record" }}</p>
-                            <p class="mt-0 mb-0"><small class="fw-lighter">Домашнее задание</small></p>
+                            <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
                         </td>
-                        <td class="grade">5</td>
+                        <td class="grade">
+                            {{ lesson.1|get_grade|default:"" }}
+                            {{ lesson.1|get_nonatt_reason|default:"" }}
+                        </td>
                         {% else %}
                         <td>
-                            <p class="mt-0 mb-0"></p>
-                            <p class="mt-0 mb-0"><small class="fw-lighter"></small></p>
+                            
                         </td>
-                        <td class="grade"></td>
+                        <td class="grade">
+
+                        </td>
                         {% endif %}
                     </tr>
                     {% endfor %}
@@ -118,7 +142,7 @@
             </table>
         </div>
         <div class="col-md-5">
-            <table class="table border border-dark">
+            <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
                         <th class="text-center" colspan="4">Вторник</th>
@@ -132,26 +156,31 @@
                 </thead>
                 <tbody>
                     {% for lesson in tuesday_lessons %}
-                    <tr>
-                        <td>{{ lesson|get_item:"sequence_num" }}</td>
-                        <td>{{ lesson|get_item:"start_time"|hm_format_time }}-{{ lesson|get_item:"end_time"|hm_format_time }}</td>
-                        {% if lesson|get_discipline:"lesson_record" != None %}
+                    <tr class="student-journal" onclick="homework_window_on('{{lesson.1.id }}')">
+                        <td>{{ lesson.0 }}</td>
+                        <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
+                        {% if lesson.1 != None %}
                         <td>
-                            <p class="mt-0 mb-0">{{ lesson|get_discipline:"lesson_record" }}</p>
-                            <p class="mt-0 mb-0"><small class="fw-lighter">Домашнее задание</small></p>
+                            <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
                         </td>
-                        <td class="grade">5</td>
+                        <td class="grade">
+                            {{ lesson.1|get_grade|default:"" }}
+                            {{ lesson.1|get_nonatt_reason|default:"" }}
+                        </td>
                         {% else %}
                         <td>
                             
                         </td>
-                        <td class="grade"></td>
+                        <td class="grade">
+
+                        </td>
                         {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            <table class="table border border-dark">
+            <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
                         <th class="text-center" colspan="4">Четверг</th>
@@ -165,26 +194,31 @@
                 </thead>
                 <tbody>
                     {% for lesson in thursday_lessons %}
-                    <tr>
-                        <td>{{ lesson|get_item:"sequence_num" }}</td>
-                        <td>{{ lesson|get_item:"start_time"|hm_format_time }}-{{ lesson|get_item:"end_time"|hm_format_time }}</td>
-                        {% if lesson|get_discipline:"lesson_record" != None %}
+                    <tr class="student-journal" onclick="homework_window_on('{{lesson.1.id }}')">
+                        <td>{{ lesson.0 }}</td>
+                        <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
+                        {% if lesson.1 != None %}
                         <td>
-                            <p class="mt-0 mb-0">{{ lesson|get_discipline:"lesson_record" }}</p>
-                            <p class="mt-0 mb-0"><small class="fw-lighter">Домашнее задание</small></p>
+                            <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
                         </td>
-                        <td class="grade">5</td>
+                        <td class="grade">
+                            {{ lesson.1|get_grade|default:"" }}
+                            {{ lesson.1|get_nonatt_reason|default:"" }}
+                        </td>
                         {% else %}
                         <td>
                             
                         </td>
-                        <td class="grade"></td>
+                        <td class="grade">
+
+                        </td>
                         {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            <table class="table border border-dark">
+            <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
                         <th class="text-center" colspan="4">Суббота</th>
@@ -198,20 +232,25 @@
                 </thead>
                 <tbody>
                     {% for lesson in saturday_lessons %}
-                    <tr>
-                        <td>{{ lesson|get_item:"sequence_num" }}</td>
-                        <td>{{ lesson|get_item:"start_time"|hm_format_time }}-{{ lesson|get_item:"end_time"|hm_format_time }}</td>
-                        {% if lesson|get_discipline:"lesson_record" != None %}
+                    <tr class="student-journal" onclick="homework_window_on('{{lesson.1.id }}')">
+                        <td>{{ lesson.0 }}</td>
+                        <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
+                        {% if lesson.1 != None %}
                         <td>
-                            <p class="mt-0 mb-0">{{ lesson|get_discipline:"lesson_record" }}</p>
-                            <p class="mt-0 mb-0"><small class="fw-lighter">Домашнее задание</small></p>
+                            <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
                         </td>
-                        <td class="grade">5</td>
+                        <td class="grade">
+                            {{ lesson.1|get_grade|default:"" }}
+                            {{ lesson.1|get_nonatt_reason|default:"" }}
+                        </td>
                         {% else %}
                         <td>
                             
                         </td>
-                        <td class="grade"></td>
+                        <td class="grade">
+
+                        </td>
                         {% endif %}
                     </tr>
                     {% endfor %}
@@ -220,4 +259,58 @@
         </div>
     </div>
 </div>
+<script>
+    const homework_window = document.getElementById("id-homework-window");
+    const homework_text = document.getElementById("id-homework-text");
+    const homework_date = document.getElementById("id-homework-date");
+    const homework_discipline = document.getElementById("id-homework-discipline");
+    const lesson_materials_link = document.getElementById("id-lesson-materials-download-link");
+    const overlay = document.getElementById("id-overlay");
+
+    function homework_window_on(lesson_id) {
+        if (!lesson_id) {
+            return;
+        }
+
+        $.ajax({
+            url: "/schedule/get_lesson/" + lesson_id + "/",
+            success: function (response) {
+                let lesson_date = response.lesson_record.lesson_date;
+                let homework = response.lesson_record.homework;
+                let lesson_materials_filename = response.lesson_record.lesson_materials;
+                let lesson_discipline = response.lesson_record.lesson_discipline
+
+                if (lesson_materials_filename) {
+                    lesson_materials_link.innerText = lesson_materials_filename;
+                    lesson_materials_link.style.display = "block";
+                    lesson_materials_link.href = "/download_lesson_materials/" + lesson_id + "/";
+                }
+
+                homework_date.innerText = lesson_date;
+                homework_text.innerText = homework;
+                homework_discipline.innerText = lesson_discipline;
+
+                overlay.style.display = "block";
+            },
+            error: function () {
+                alert('Ошибка в загрузке урока.');
+            }
+        })
+
+    }
+
+    function homework_window_off() {
+        homework_date.innerText = "..."
+
+        lesson_materials_link.innerText = "";
+        lesson_materials_link.style.display = "none";
+        lesson_materials_link.href = "";
+
+        homework_text.innerText = "";
+
+        homework_discipline.innerText = "...";
+
+        overlay.style.display = "none";
+    }
+</script>
 {% endblock %}

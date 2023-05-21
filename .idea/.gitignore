@@ -1,3 +1,6 @@
 # Default ignored files
 /shelf/
 /workspace.xml
+/StudentJournal/grades_nonattendance/migrations/
+/StudentJournal/users/migrations/
+/StudentJournal/scheduling/migrations/

@@ -7,8 +7,7 @@ class LessonSchedule(models.Model):
     lesson_holding_datetime_end = models.DateTimeField()
     class_code = models.ForeignKey(ClassCode, on_delete=models.CASCADE)
     homework = models.CharField(max_length=255, blank=True, null=True)
-    lesson_material_text = models.CharField(max_length=255, blank=True, null=True)
-    lesson_material_file_path = models.CharField(max_length=255, blank=True, null=True)
+    lesson_material_file = models.FileField(upload_to="materials", null=True, blank=True)
     sequence_num = models.SmallIntegerField()
 
     class Meta:
