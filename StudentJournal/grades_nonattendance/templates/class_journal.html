@@ -72,7 +72,7 @@
             var input = document.createElement('input');
             input.classList.add("input-grades-nonatt");
             input.classList.add("text-center");
-            input.name = "grade_nonatt-" + target.getAttribute("data-student_id") + "-" + target.getAttribute("data-lesson_id");
+            input.name = "grade-nonatt-" + target.getAttribute("data-student_id") + "-" + target.getAttribute("data-lesson_id");
             input.type = 'text';
             input.setAttribute("maxlength", 2);
             target.parentNode.replaceChild(input, target);
@@ -85,12 +85,13 @@
     for (let i = 0; i < grades_nonatt_inputs.length; i++) {
         if (grades_nonatt_inputs[i].tagName === "INPUT") {
             button_id = "id-btn-" + grades_nonatt_inputs[i].name;
+            console.log(button_id)
             grades_nonatt_button = document.getElementById(button_id);
 
             replacing_input = document.createElement("input");
             replacing_input.classList.add("input-grades-nonatt");
             replacing_input.classList.add("text-center");
-            replacing_input.name = "grade_nonatt-" + grades_nonatt_button.getAttribute("data-student_id") + "-" + grades_nonatt_button.getAttribute("data-lesson_id");
+            replacing_input.name = "grade-nonatt-" + grades_nonatt_button.getAttribute("data-student_id") + "-" + grades_nonatt_button.getAttribute("data-lesson_id");
             replacing_input.type = 'text';
             replacing_input.setAttribute("maxlength", 2);
             replacing_input.value = grades_nonatt_inputs[i].value;
@@ -98,8 +99,6 @@
             grades_nonatt_button.replaceWith(replacing_input);
         }
     }
-
-    existingGradesNonattContainer.remove();
 
     const homework_window = document.getElementById("id-homework-window");
     const homework_input = document.getElementById("id-homework-input");
@@ -110,6 +109,7 @@
     const delete_lesson_materials_button = document.getElementById("id-lesson-materials-delete-button");
     const overlay = document.getElementById("id-overlay");
 
+    console.log(homework_form)
 
     function homework_window_on(lesson_id) { 
         $.ajax({

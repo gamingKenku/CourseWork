@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+<div class="container">
+    <div class="row pt-3 pb-3">
+        <div class="col">
+            <h4>Отчет о посещаемости ученика {{ student }} за четверть {{ term }}</h4>
+            {{ nonatt_html|safe }}
+        </div>
+    </div>
+</div>
+{% endblock %}

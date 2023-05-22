@@ -15,8 +15,8 @@
             {% if user|has_group:"student" %}
             <p>Класс <a href="/classes/{{ class.class_code.id }}">{{ class.class_code.class_code }}</a></p>
             <h4>Отчеты</h4>
-            <p><a class="link-primary" href="">Просмотреть отчет по посещаемости</a></p>
-            <p><a class="link-primary" href="">Просмотреть отчет по среднему баллу</a></p>
+            <p><a class="link-primary" href="/students/non-attendance-report/{{ user.id }}/4">Просмотреть отчет по посещаемости</a></p>
+            <p><a class="link-primary" href="/students/grades-report/{{ user.id }}/4">Просмотреть отчет по среднему баллу</a></p>
             {% endif %}
             {% if user|has_group:"parent" %}
             <p>Обучающиеся дети:</p>

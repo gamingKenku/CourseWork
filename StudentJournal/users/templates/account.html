@@ -13,8 +13,8 @@
             <p>Дата рождения: {{ user.date_of_birth.date }} ({{ user.age }} лет)</p>
             {% if request.user|has_group:"student" %}
             <h4>Отчеты</h4>
-            <p><a class="link-primary" href="">Просмотреть отчет по посещаемости</a></p>
-            <p><a class="link-primary" href="">Просмотреть отчет по среднему баллу</a></p>
+            <p><a class="link-primary" href="/students/non-attendance-report/{{ request.user.id }}/4">Просмотреть отчет по посещаемости</a></p>
+            <p><a class="link-primary" href="/students/grades-report/{{ request.user.id }}/4">Просмотреть отчет по среднему баллу</a></p>
             {% endif %}
             <a type="button" class="btn btn-danger" href="/logout/">Выйти из системы</a>
         </div>

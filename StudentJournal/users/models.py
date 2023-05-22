@@ -111,7 +111,7 @@ class ClassCode(models.Model):
 
 class ClassStudent(models.Model):
     class_code = models.ForeignKey(ClassCode, on_delete=models.CASCADE)
-    student = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    student = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name="student_to_class")
 
     class Meta:
         unique_together = (("class_code", "student"),)
