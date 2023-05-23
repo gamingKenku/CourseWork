@@ -82,7 +82,7 @@ class ClassCode(models.Model):
     ]
 
     class_code = models.CharField(max_length=5)
-    homeroom_teacher = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    homeroom_teacher = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name="homeroom_teacher_to_class")
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=STUDYING)
     graduated_year = models.IntegerField(null=True)
 
@@ -126,8 +126,8 @@ class DisciplineName(models.Model):
 
 
 class DisciplineTeacher(models.Model):
-    discipline = models.ForeignKey(DisciplineName, on_delete=models.CASCADE)
-    teacher = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    discipline = models.ForeignKey(DisciplineName, on_delete=models.CASCADE, related_name="discipline_to_teacher")
+    teacher = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name="teacher_to_discipline")
 
     class Meta:
         unique_together = (("teacher", "discipline"),)

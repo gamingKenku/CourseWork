@@ -15,8 +15,24 @@
             {% if user|has_group:"student" %}
             <p>Класс <a href="/classes/{{ class.class_code.id }}">{{ class.class_code.class_code }}</a></p>
             <h4>Отчеты</h4>
-            <p><a class="link-primary" href="/students/non-attendance-report/{{ user.id }}/4">Просмотреть отчет по посещаемости</a></p>
-            <p><a class="link-primary" href="/students/grades-report/{{ user.id }}/4">Просмотреть отчет по среднему баллу</a></p>
+            <p>
+                <a id="id-nonattendace-report-link" class="link-primary" href="#">Просмотреть отчет по посещаемости за</a>
+                <select style="display: inline;" name="term_select" id="id-term-select-nonatt">
+                    <option value="/students/non-attendance-report/{{ user.id }}/1">первую четверть</option>
+                    <option value="/students/non-attendance-report/{{ user.id }}/2">вторую четверть</option>
+                    <option value="/students/non-attendance-report/{{ user.id }}/3">третью четверть</option>
+                    <option value="/students/non-attendance-report/{{ user.id }}/4">четвертую четверть</option>
+                </select>
+            </p>
+            <p>
+                <a id="id-grades-report-link" class="link-primary" href="#">Просмотреть отчет по среднему баллу за</a>
+                <select style="display: inline;" name="term_select" id="id-term-select-grades">
+                    <option value="/students/grades-report/{{ user.id }}/1">первую четверть</option>
+                    <option value="/students/grades-report/{{ user.id }}/2">вторую четверть</option>
+                    <option value="/students/grades-report/{{ user.id }}/3">третью четверть</option>
+                    <option value="/students/grades-report/{{ user.id }}/4">четвертую четверть</option>
+                </select>
+            </p>
             {% endif %}
             {% if user|has_group:"parent" %}
             <p>Обучающиеся дети:</p>
@@ -37,8 +53,8 @@
             </ul>
             <h4>Преподаваемые предметы</h4>
             <ul>
-                {% for discipline in disciplines %}
-                <li>{{ discipline.discipline.discipline_name }}</li>
+                {% for discipline_teacher_record in disciplines %}
+                <li>{{ discipline_teacher_record.discipline }}</li>
                 {% empty %}
                 <p>Пока не назначены.</p>
                 {% endfor %}
@@ -48,4 +64,21 @@
         </div>
     </div>
 </div>
+<script>
+    const term_select_nonatt = document.getElementById("id-term-select-nonatt");
+    const term_select_grades = document.getElementById("id-term-select-grades")
+    const nonatt_report_link = document.getElementById("id-nonattendace-report-link");
+    const grades_report_link = document.getElementById("id-grades-report-link")
+
+    nonatt_report_link.href = term_select_nonatt.value;
+    grades_report_link.href = term_select_grades.value;
+
+    term_select_nonatt.addEventListener("change", function () {
+        nonatt_report_link.href = term_select_nonatt.value;
+    })
+
+    term_select_grades.addEventListener("change", function () {
+        grades_report_link.href = term_select_grades.value;
+    })
+</script>
 {% endblock %}

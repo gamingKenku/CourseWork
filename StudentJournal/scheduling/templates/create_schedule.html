@@ -13,19 +13,21 @@
 				<table class="table border border-dark">
 					<thead>
 						<tr>
-							<th class="text-center" colspan="4">Понедельник</th>
+							<th class="text-center" colspan="5">Понедельник</th>
 						</tr>
 						<tr>
 							<th>#</th>
 							<th>Время</th>
 							<th>Предмет</th>
 							<th>Учитель</th>
+							<th style="width: 10%;">Кабинет</th>
 						</tr>
 					</thead>
 					<tbody>
 						{{ monday_lesson_form.management_form }}
 						{% for lesson_form in monday_lesson_form %}
 						<tr>
+							{{ lesson_form.class_code }}
 							<td>{{ forloop.counter }}</td>
 							<td>{{ lesson_form.start_time }}{{ lesson_form.end_time}}{{lesson_form.start_time.value|hm_format_time}}-{{lesson_form.end_time.value|hm_format_time}}</td>
 							<td>{{ lesson_form.discipline }}</td>
@@ -33,6 +35,18 @@
 								{% if lesson_form.teacher.errors %}
 								<ul class="mb-0 mt-0">
 									{% for error in lesson_form.teacher.errors %}
+									<small class="text-danger">
+										<li>{{ error }}</li>
+									</small>
+									{% endfor %}
+								</ul>
+								{% endif %}
+							</td>
+							<td>
+								{{ lesson_form.classroom }}
+								{% if lesson_form.classroom.errors %}
+								<ul class="mb-0 mt-0">
+									{% for error in lesson_form.classroom.errors %}
 									<small class="text-danger">
 										<li>{{ error }}</li>
 									</small>
@@ -49,19 +63,21 @@
 				<table class="table border border-dark">
 					<thead>
 						<tr>
-							<th class="text-center" colspan="4">Вторник</th>
+							<th class="text-center" colspan="5">Вторник</th>
 						</tr>
 						<tr>
 							<th>#</th>
 							<th>Время</th>
 							<th>Предмет</th>
 							<th>Учитель</th>
+							<th style="width: 10%;">Кабинет</th>
 						</tr>
 					</thead>
 					<tbody>
 						{{ tuesday_lesson_form.management_form }}
 						{% for lesson_form in tuesday_lesson_form %}
 						<tr>
+							{{ lesson_form.class_code }}
 							<td>{{ forloop.counter }}</td>
 							<td>{{ lesson_form.start_time }}{{ lesson_form.end_time}}{{lesson_form.start_time.value|hm_format_time}}-{{lesson_form.end_time.value|hm_format_time}}</td>
 							<td>{{ lesson_form.discipline }}</td>
@@ -69,6 +85,18 @@
 								{% if lesson_form.teacher.errors %}
 								<ul class="mb-0 mt-0">
 									{% for error in lesson_form.teacher.errors %}
+									<small class="text-danger">
+										<li>{{ error }}</li>
+									</small>
+									{% endfor %}
+								</ul>
+								{% endif %}
+							</td>
+							<td>
+								{{ lesson_form.classroom }}
+								{% if lesson_form.classroom.errors %}
+								<ul class="mb-0 mt-0">
+									{% for error in lesson_form.classroom.errors %}
 									<small class="text-danger">
 										<li>{{ error }}</li>
 									</small>
@@ -97,19 +125,21 @@
 				<table class="table border border-dark">
 					<thead>
 						<tr>
-							<th class="text-center" colspan="4">Среда</th>
+							<th class="text-center" colspan="5">Среда</th>
 						</tr>
 						<tr>
 							<th>#</th>
 							<th>Время</th>
 							<th>Предмет</th>
 							<th>Учитель</th>
+							<th style="width: 10%;">Кабинет</th>
 						</tr>
 					</thead>
 					<tbody>
 						{{ wednesday_lesson_form.management_form }}
 						{% for lesson_form in wednesday_lesson_form %}
 						<tr>
+							{{ lesson_form.class_code }}
 							<td>{{ forloop.counter }}</td>
 							<td>{{ lesson_form.start_time }}{{ lesson_form.end_time}}{{lesson_form.start_time.value|hm_format_time}}-{{lesson_form.end_time.value|hm_format_time}}</td>
 							<td>{{ lesson_form.discipline }}</td>
@@ -117,6 +147,18 @@
 								{% if lesson_form.teacher.errors %}
 								<ul class="mb-0 mt-0">
 									{% for error in lesson_form.teacher.errors %}
+									<small class="text-danger">
+										<li>{{ error }}</li>
+									</small>
+									{% endfor %}
+								</ul>
+								{% endif %}
+							</td>
+							<td>
+								{{ lesson_form.classroom }}
+								{% if lesson_form.classroom.errors %}
+								<ul class="mb-0 mt-0">
+									{% for error in lesson_form.classroom.errors %}
 									<small class="text-danger">
 										<li>{{ error }}</li>
 									</small>
@@ -133,19 +175,21 @@
 				<table class="table border border-dark">
 					<thead>
 						<tr>
-							<th class="text-center" colspan="4">Четверг</th>
+							<th class="text-center" colspan="5">Четверг</th>
 						</tr>
 						<tr>
 							<th>#</th>
 							<th>Время</th>
 							<th>Предмет</th>
 							<th>Учитель</th>
+							<th style="width: 10%;">Кабинет</th>
 						</tr>
 					</thead>
 					<tbody>
 						{{ thursday_lesson_form.management_form }}
 						{% for lesson_form in thursday_lesson_form %}
 						<tr>
+							{{ lesson_form.class_code }}
 							<td>{{ forloop.counter }}</td>
 							<td>{{ lesson_form.start_time }}{{ lesson_form.end_time}}{{lesson_form.start_time.value|hm_format_time}}-{{lesson_form.end_time.value|hm_format_time}}</td>
 							<td>{{ lesson_form.discipline }}</td>
@@ -153,6 +197,18 @@
 								{% if lesson_form.teacher.errors %}
 								<ul class="mb-0 mt-0">
 									{% for error in lesson_form.teacher.errors %}
+									<small class="text-danger">
+										<li>{{ error }}</li>
+									</small>
+									{% endfor %}
+								</ul>
+								{% endif %}
+							</td>
+							<td>
+								{{ lesson_form.classroom }}
+								{% if lesson_form.classroom.errors %}
+								<ul class="mb-0 mt-0">
+									{% for error in lesson_form.classroom.errors %}
 									<small class="text-danger">
 										<li>{{ error }}</li>
 									</small>
@@ -171,19 +227,21 @@
 				<table class="table border border-dark">
 					<thead>
 						<tr>
-							<th class="text-center" colspan="4">Пятница</th>
+							<th class="text-center" colspan="5">Пятница</th>
 						</tr>
 						<tr>
 							<th>#</th>
 							<th>Время</th>
 							<th>Предмет</th>
 							<th>Учитель</th>
+							<th style="width: 10%;">Кабинет</th>
 						</tr>
 					</thead>
 					<tbody>
 						{{ friday_lesson_form.management_form }}
 						{% for lesson_form in friday_lesson_form %}
 						<tr>
+							{{ lesson_form.class_code }}
 							<td>{{ forloop.counter }}</td>
 							<td>{{ lesson_form.start_time }}{{ lesson_form.end_time}}{{lesson_form.start_time.value|hm_format_time}}-{{lesson_form.end_time.value|hm_format_time}}</td>
 							<td>{{ lesson_form.discipline }}</td>
@@ -191,6 +249,18 @@
 								{% if lesson_form.teacher.errors %}
 								<ul class="mb-0 mt-0">
 									{% for error in lesson_form.teacher.errors %}
+									<small class="text-danger">
+										<li>{{ error }}</li>
+									</small>
+									{% endfor %}
+								</ul>
+								{% endif %}
+							</td>
+							<td>
+								{{ lesson_form.classroom }}
+								{% if lesson_form.classroom.errors %}
+								<ul class="mb-0 mt-0">
+									{% for error in lesson_form.classroom.errors %}
 									<small class="text-danger">
 										<li>{{ error }}</li>
 									</small>
@@ -207,19 +277,21 @@
 				<table class="table border border-dark">
 					<thead>
 						<tr>
-							<th class="text-center" colspan="4">Суббота</th>
+							<th class="text-center" colspan="5">Суббота</th>
 						</tr>
 						<tr>
 							<th>#</th>
 							<th>Время</th>
 							<th>Предмет</th>
 							<th>Учитель</th>
+							<th style="width: 10%;">Кабинет</th>
 						</tr>
 					</thead>
 					<tbody>
 						{{ saturday_lesson_form.management_form }}
 						{% for lesson_form in saturday_lesson_form %}
 						<tr>
+							{{ lesson_form.class_code }}
 							<td>{{ forloop.counter }}</td>
 							<td>{{ lesson_form.start_time }}{{ lesson_form.end_time}}{{lesson_form.start_time.value|hm_format_time}}-{{lesson_form.end_time.value|hm_format_time}}</td>
 							<td>{{ lesson_form.discipline }}</td>
@@ -227,6 +299,18 @@
 								{% if lesson_form.teacher.errors %}
 								<ul class="mb-0 mt-0">
 									{% for error in lesson_form.teacher.errors %}
+									<small class="text-danger">
+										<li>{{ error }}</li>
+									</small>
+									{% endfor %}
+								</ul>
+								{% endif %}
+							</td>
+							<td>
+								{{ lesson_form.classroom }}
+								{% if lesson_form.classroom.errors %}
+								<ul class="mb-0 mt-0">
+									{% for error in lesson_form.classroom.errors %}
 									<small class="text-danger">
 										<li>{{ error }}</li>
 									</small>

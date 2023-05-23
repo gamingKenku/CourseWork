@@ -4,12 +4,15 @@ from django.http import HttpResponseRedirect, Http404, HttpResponseBadRequest
 from .forms import LessonSheduleForm, LessonBellScheduleForm, QuartersScheduleForm, ClassPicker, DisciplineNamePicker, TermPicker
 from .models import LessonSchedule
 from django.forms import formset_factory
+from django.contrib.auth.decorators import login_required, permission_required
 from users.models import ClassCode, AppUser, DisciplineTeacher, ClassStudent, DisciplineName
 from django.http import JsonResponse
 from django.db.models import Q
 import datetime
 
 
+@login_required(login_url="/login/")
+@permission_required("scheduling.add_lessonschedule")
 def create_schedule(request, class_id):
     context = {}
 
@@ -21,7 +24,11 @@ def create_schedule(request, class_id):
         formsets_dict = {}
         formset_valid = True
         for day in week.schedule.keys():
-            formset = LessonScheduleFormset(request.POST, prefix=day)
+            post_data = request.POST.copy()
+            formset = LessonScheduleFormset(post_data, prefix=day)
+
+            for form in formset:
+                form.data[form.add_prefix("term_num")] = request.POST["term_select"]
 
             if not formset.is_valid():
                 formset_valid = False
@@ -43,6 +50,7 @@ def create_schedule(request, class_id):
             for form in formset:
                 form.fields["start_time"].initial = week.schedule[day][i].start_time
                 form.fields["end_time"].initial = week.schedule[day][i].end_time
+                form.fields["class_code"].initial = class_code
                 i += 1
 
             context[f"{day}_lesson_form"] = formset
@@ -51,6 +59,8 @@ def create_schedule(request, class_id):
     return render(request, "create_schedule.html", context)
 
 
+@login_required(login_url="/login/")
+@permission_required("scheduling.add_lessonschedule")
 def get_teachers_for_discipline(request, discipline_id):
     discipline_teacher_records = DisciplineTeacher.objects.filter(discipline=discipline_id)
     teacher_list = [{'id': discipline_teacher_record.teacher.id, 'name': discipline_teacher_record.teacher.__str__()} for discipline_teacher_record in discipline_teacher_records]
@@ -65,6 +75,8 @@ def reset_schedule(request, class_id):
     pass
 
 
+@login_required(login_url="/login/")
+@permission_required("scheduling.change_lessonschedule")
 def bell_quarter_edit(request):
     context = {}
 
@@ -113,6 +125,8 @@ def bell_quarter_edit(request):
     return render(request, "bell_quarter_edit.html", context)
 
 
+@login_required(login_url="/login/")
+@permission_required("scheduling.view_lessonschedule")
 def schedule_menu(request):
     context = {
         "class_picker": ClassPicker(),
@@ -122,8 +136,18 @@ def schedule_menu(request):
     return render(request, "schedule_menu.html", context)
 
 
+@login_required(login_url="/login/")
+@permission_required("scheduling.can_view_student_journal")
 def student_journal(request, week_start_date, week_end_date):
-    user_class_code = get_object_or_404(ClassStudent, student=request.user.id).class_code
+    if request.user.groups.get().name == "parent":
+        try:
+            student = request.user.mother_to_parents.get().student
+        except:
+            student = request.user.father_to_parents.get().student
+    else:
+        student = request.user
+
+    user_class_code = get_object_or_404(ClassStudent, student=student).class_code
 
     try:
         week_start_date = datetime.date.fromisoformat(week_start_date)

@@ -8,8 +8,11 @@ import datetime
 class LessonSheduleForm(forms.Form):
     start_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M', attrs={"hidden": True}))
     end_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M', attrs={"hidden": True}))
+    class_code = forms.ModelChoiceField(ClassCode.objects.all(), required=True, widget=forms.HiddenInput())
     discipline = forms.ModelChoiceField(DisciplineName.objects.all().order_by("discipline_name"), required=False)
     teacher = forms.ModelChoiceField(AppUser.objects.all().order_by("last_name", "first_name", "patronym"), required=False)
+    term_num = forms.IntegerField(required=True, widget=forms.HiddenInput())
+    classroom = forms.CharField(max_length=5, required=False, widget=forms.TextInput(attrs={"style":"width: 100%;"}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -18,31 +21,54 @@ class LessonSheduleForm(forms.Form):
 
     def is_valid(self):
         valid = super().is_valid()
+
         lesson_time_valid = True
         lesson_teacher_valid = True
+        classroom_valid = True
 
-        if self.cleaned_data.get("discipline") == None and self.cleaned_data.get("teacher") == None:
+        discipline = self.cleaned_data.get("discipline")
+        teacher = self.cleaned_data.get("teacher")
+        class_code = self.cleaned_data.get("class_code")
+        classroom = self.cleaned_data.get("classroom")
+
+        if not (discipline or teacher or classroom):
             return True
         
-        if self.cleaned_data.get("discipline") != None and self.cleaned_data.get("teacher") == None:
+        if not teacher:
             self.add_error("teacher", "Поле должно быть заполнено.")
             return False
 
-        if self.cleaned_data.get("discipline") == None and self.cleaned_data.get("teacher") != None:
+        if not discipline:
             self.add_error("discipline", "Поле должно быть заполнено.")
             return False
+        
+        if not classroom:
+            self.add_error("classroom", "Поле должно быть заполнено.")
+            return False
 
-        if LessonSchedule.objects.filter(lesson_holding_datetime_start__time = self.cleaned_data.get("start_time"), discipline_teacher__teacher = self.cleaned_data.get("teacher")).exists():
+        if LessonSchedule.objects.filter(
+                lesson_holding_datetime_start__hour = self.cleaned_data.get("start_time").hour, 
+                lesson_holding_datetime_start__minute = self.cleaned_data.get("start_time").minute, 
+                discipline_teacher__teacher = teacher,
+                term_num = self.cleaned_data.get("term_num")
+            ).exclude(class_code=class_code).exclude(lesson_holding_datetime_start__lte = datetime.datetime.now()).exists():
             self.add_error("teacher", "Этот учитель уже проводит занятия в это время.")
             lesson_time_valid = False
 
-        if not DisciplineTeacher.objects.filter(teacher=self.cleaned_data.get("teacher"), discipline=self.cleaned_data.get("discipline")).exists():
-            print(self.cleaned_data.get("teacher"))
-            print(self.cleaned_data.get("discipline"))
+        if LessonSchedule.objects.filter(
+                lesson_holding_datetime_start__hour = self.cleaned_data.get("start_time").hour, 
+                lesson_holding_datetime_start__minute = self.cleaned_data.get("start_time").minute, 
+                classroom = classroom,
+                term_num = self.cleaned_data.get("term_num")
+            ).exclude(class_code=class_code).exclude(lesson_holding_datetime_start__lte = datetime.datetime.now()).exists():
+            self.add_error("classroom", "В этом классе уже проводятся занятия в это время.")
+            classroom_valid = False
+
+        if not DisciplineTeacher.objects.filter(teacher=teacher, discipline=discipline).exists():
             self.add_error("teacher", "Этот учитель не преподает указанный предмет.")
             lesson_teacher_valid = False
         
-        return valid and lesson_time_valid and lesson_teacher_valid
+        return valid and lesson_time_valid and lesson_teacher_valid and classroom_valid
     
 
 class LessonBellScheduleForm(forms.Form):

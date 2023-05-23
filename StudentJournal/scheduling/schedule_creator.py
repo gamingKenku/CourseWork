@@ -98,20 +98,23 @@ class BellSchedule:
 
 
 class Lesson:
-    def __init__(self, start: datetime.time, end: datetime.time, sequence_num: int, discipline_teacher=None) -> None:
+    def __init__(self, start: datetime.time, end: datetime.time, sequence_num: int, classroom=None, discipline_teacher=None) -> None:
         self.start_time = start
         self.end_time = end
         self.discipline_teacher = discipline_teacher
         self.sequence_num = sequence_num
+        self.classroom = classroom
 
-    def get_db_record(self, lesson_date: datetime.date, class_code):
+    def get_db_record(self, lesson_date: datetime.date, class_code, term_num):
         if self.discipline_teacher != None:
             return LessonSchedule(
                 lesson_holding_datetime_start=datetime.datetime.combine(lesson_date, self.start_time),
                 lesson_holding_datetime_end=datetime.datetime.combine(lesson_date, self.end_time),
                 class_code=class_code,
                 discipline_teacher=self.discipline_teacher,
-                sequence_num = self.sequence_num
+                sequence_num = self.sequence_num,
+                term_num=term_num,
+                classroom=self.classroom
             )
 
 
@@ -134,8 +137,8 @@ class WeekScheduleCreator:
                     discipline_id = formset[i].cleaned_data["discipline"]
                     if DisciplineTeacher.objects.filter(teacher=teacher_id, discipline=discipline_id).exists():
                         discipline_teacher_record = DisciplineTeacher.objects.get(teacher=teacher_id, discipline=discipline_id)
-                        if discipline_teacher_record != None:
-                            self.schedule[day][i].discipline_teacher = discipline_teacher_record       
+                        self.schedule[day][i].discipline_teacher = discipline_teacher_record
+                        self.schedule[day][i].classroom = formset[i].cleaned_data["classroom"]
 
 
     def reset_db_records_future(self, term: int):
@@ -148,15 +151,23 @@ class WeekScheduleCreator:
             start = today_date
             current_date = today_date
 
-        LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__gte=start) & Q(lesson_holding_datetime_start__lte=end)).delete()
+        LessonSchedule.objects.filter(
+            Q(lesson_holding_datetime_start__gte=start) &
+            Q(lesson_holding_datetime_start__lte=end) & 
+            Q(class_code=self.class_code)
+            ).delete()
         return current_date
     
 
-    def reset_db_records(seld, term: int):
-        start = QuarterSchedule.quarter_schedule[term]["start_date"]+ datetime.timedelta(days=1)
+    def reset_db_records(self, term: int):
+        start = QuarterSchedule.quarter_schedule[term]["start_date"] - datetime.timedelta(days=1)
         end = QuarterSchedule.quarter_schedule[term]["end_date"] + datetime.timedelta(days=1)
 
-        records_to_delete = LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__gte=start) & Q(lesson_holding_datetime_start__lte=end))
+        records_to_delete = LessonSchedule.objects.filter(
+            Q(lesson_holding_datetime_start__gte=start) & 
+            Q(lesson_holding_datetime_start__lte=end) & 
+            Q(class_code=self.class_code)
+            )
 
         if records_to_delete.exists():
             records_to_delete.delete()
@@ -183,7 +194,7 @@ class WeekScheduleCreator:
 
             for lesson in self.schedule[weekday]:
                 if lesson.discipline_teacher != None:
-                    batch.append(lesson.get_db_record(current_date, self.class_code))
+                    batch.append(lesson.get_db_record(current_date, self.class_code, term + 1))
 
             if current_date.day == 20:
                 LessonSchedule.objects.bulk_create(batch)

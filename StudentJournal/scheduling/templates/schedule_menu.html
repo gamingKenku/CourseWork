@@ -9,8 +9,10 @@
         <div class="col-md-8">
             <h4>Выберите класс: <div class="d-inline">{{ class_picker }}</div>
             </h4>
+            {% if perms.scheduling.add_lessonschedule %}
             <a type="button" id="id_create_schedule" class="d-block btn btn-light mb-1 mt-1" href="">Составить новое
                 расписание</a>
+            {% endif %}
             <a type="button" id="id_open_class_journal" class="d-block btn btn-light mb-1 mt-1" href="">Окрыть классный
                 журнал</a>
             <p>По предмету:
@@ -31,8 +33,9 @@
         const createScheduleLink = document.getElementById("id_create_schedule");
         const openClassJournalLink = document.getElementById("id_open_class_journal");
 
-        createScheduleLink.classList.add("disabled")
-        openClassJournalLink.classList.add("disabled")
+        createScheduleLink?.classList.add("disabled");
+
+        openClassJournalLink.classList.add("disabled");
 
         classSelect.addEventListener("change", () => {
             const selectedValue = classSelect.value;

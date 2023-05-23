@@ -9,15 +9,66 @@
         <div class="col-md-8">
             <h4>Общая информация</h4>
             <p>Имя пользователя: {{ user.username }}</p>
-            <p>Ф.И.О. : {{ user.first_name }} {{ user.last_name }} {{ user.patronym }}</p>
-            <p>Дата рождения: {{ user.date_of_birth.date }} ({{ user.age }} лет)</p>
+            <p>Ф.И.О. : {{ request.user }}</p>
+            <p>Дата рождения: {{ request.user.date_of_birth.date }} ({{ request.user.age }} лет)</p>
             {% if request.user|has_group:"student" %}
             <h4>Отчеты</h4>
-            <p><a class="link-primary" href="/students/non-attendance-report/{{ request.user.id }}/4">Просмотреть отчет по посещаемости</a></p>
-            <p><a class="link-primary" href="/students/grades-report/{{ request.user.id }}/4">Просмотреть отчет по среднему баллу</a></p>
+            <p>
+                <a id="id-nonattendace-report-link" class="link-primary" href="#">Просмотреть отчет по посещаемости за</a>
+                <select style="display: inline;" name="term_select" id="id-term-select-nonatt">
+                    <option value="/students/non-attendance-report/{{ request.user.id }}/1">первую четверть</option>
+                    <option value="/students/non-attendance-report/{{ request.user.id }}/2">вторую четверть</option>
+                    <option value="/students/non-attendance-report/{{ request.user.id }}/3">третью четверть</option>
+                    <option value="/students/non-attendance-report/{{ request.user.id }}/4">четвертую четверть</option>
+                </select>
+            </p>
+            <p>
+                <a id="id-grades-report-link" class="link-primary" href="#">Просмотреть отчет по среднему баллу за</a>
+                <select style="display: inline;" name="term_select" id="id-term-select-grades">
+                    <option value="/students/grades-report/{{ request.user.id }}/1">первую четверть</option>
+                    <option value="/students/grades-report/{{ request.user.id }}/2">вторую четверть</option>
+                    <option value="/students/grades-report/{{ request.user.id }}/3">третью четверть</option>
+                    <option value="/students/grades-report/{{ request.user.id }}/4">четвертую четверть</option>
+                </select>
+            </p>
+            {% endif %}
+            {% if request.user|has_group:"teacher" or request.user|has_group:"head_teacher" or request.user|has_group:"director" %}
+            <h4>Классы под руководством</h4>
+            <ul>
+                {% for homeroomed_class in request.user.homeroom_teacher_to_class.all %}
+                <li><a href="/classes/{{ homeroomed_class.id }}">{{ homeroomed_class.class_code }}</a></li>
+                {% empty %}
+                <p>Пока не назначены</p>
+                {% endfor %}
+            </ul>
+            <h4>Преподаваемые предметы</h4>
+            <ul>
+                {% for discipline_teacher_record in request.user.teacher_to_discipline.all %}
+                <li>{{ discipline_teacher_record.discipline }}</li>
+                {% empty %}
+                <p>Пока не назначены.</p>
+                {% endfor %}
+            </ul>
             {% endif %}
             <a type="button" class="btn btn-danger" href="/logout/">Выйти из системы</a>
         </div>
     </div>
 </div>
+<script>
+    const term_select_nonatt = document.getElementById("id-term-select-nonatt");
+    const term_select_grades = document.getElementById("id-term-select-grades")
+    const nonatt_report_link = document.getElementById("id-nonattendace-report-link");
+    const grades_report_link = document.getElementById("id-grades-report-link")
+
+    nonatt_report_link.href = term_select_nonatt.value;
+    grades_report_link.href = term_select_grades.value;
+
+    term_select_nonatt.addEventListener("change", function () {
+        nonatt_report_link.href = term_select_nonatt.value;
+    })
+
+    term_select_grades.addEventListener("change", function () {
+        grades_report_link.href = term_select_grades.value;
+    })
+</script>
 {% endblock %}

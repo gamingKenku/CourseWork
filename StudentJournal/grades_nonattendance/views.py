@@ -11,8 +11,11 @@ from scheduling.schedule_creator import QuarterSchedule
 from users.models import ClassCode, ClassStudent, DisciplineName, AppUser
 from .models import LessonResults;
 from scheduling.schedule_creator import QuarterSchedule
+from django.contrib.auth.decorators import login_required, permission_required
 
 
+@login_required(login_url="/login/")
+@permission_required("scheduling.can_view_class_journal")
 def class_journal(request, class_id, discipline_id, term):
     context = {}
 
@@ -74,6 +77,8 @@ def class_journal(request, class_id, discipline_id, term):
     return render(request, "class_journal.html", context)
 
 
+@login_required(login_url="/login/")
+@permission_required("grades_nonattendance.view_lessonresults")
 def nonatt_report(request, student_id, term):
     term_start_date = QuarterSchedule.quarter_schedule[int(term - 1)]["start_date"]
     term_end_date = QuarterSchedule.quarter_schedule[int(term - 1)]["end_date"] + datetime.timedelta(days=1)
@@ -99,6 +104,8 @@ def nonatt_report(request, student_id, term):
     return render(request, "nonatt_report.html", context)
 
 
+@login_required(login_url="/login/")
+@permission_required("grades_nonattendance.view_lessonresults")
 def grades_report(request, student_id, term):
     term_start_date = QuarterSchedule.quarter_schedule[int(term - 1)]["start_date"]
     term_end_date = QuarterSchedule.quarter_schedule[int(term - 1)]["end_date"] + datetime.timedelta(days=1)
@@ -122,32 +129,9 @@ def grades_report(request, student_id, term):
 
     return render(request, "grades_report.html", context) 
 
-def get_grades_dataframe(term_start_date, term_end_date, student):
-    grade_records = LessonResults.objects.filter(
-        Q(student = student) & 
-        Q(lesson__lesson_holding_datetime_start__gte = term_start_date) & 
-        Q(lesson__lesson_holding_datetime_start__lte = term_end_date) &
-        Q(grade__isnull = False)
-    )
 
-    indexes_list = list(set(LessonSchedule.objects.filter(
-        Q(lesson_holding_datetime_start__gte = term_start_date) & 
-        Q(lesson_holding_datetime_start__lte = term_end_date)
-    ).values_list("discipline_teacher__discipline__discipline_name", flat=True)))
-    
-    columns_list = [1, 2, 3, 4, 5]
-    grades_dataframe = pd.DataFrame(0, index=indexes_list, columns=columns_list)
-
-    for grade_record in grade_records:
-        grade = grade_record.grade
-        discipline = grade_record.lesson.discipline_teacher.discipline.discipline_name
-
-        grades_dataframe.at[discipline, grade] += 1
-
-    grades_dataframe["Средний балл"] = grades_dataframe.apply(lambda row: row.dot(row.index.astype(int)), axis=1) / grades_dataframe.sum(axis=1)
-    return grades_dataframe   
-
-
+@login_required(login_url="/login/")
+@permission_required("scheduling.view_lessonschedule")
 def get_lesson(request, lesson_id):
     lesson_record = LessonSchedule.objects.get(id=lesson_id)
 
@@ -165,9 +149,12 @@ def get_lesson(request, lesson_id):
         "lesson_date": lesson_record.lesson_holding_datetime_start.strftime("%d.%m.%Y"),
         "homework": lesson_record.homework
     }
+
     return JsonResponse({"lesson_record": lesson_record})
 
 
+@login_required(login_url="/login/")
+@permission_required("scheduling.view_lessonschedule")
 def download_lesson_materials(request, lesson_id):
     lesson_record = get_object_or_404(LessonSchedule, pk=lesson_id)
 
@@ -176,6 +163,8 @@ def download_lesson_materials(request, lesson_id):
     return FileResponse(material_file, as_attachment=True)
 
 
+@login_required(login_url="/login/")
+@permission_required("scheduling.can_give_homework")
 def delete_lesson_materials(request, lesson_id):
     lesson_record = get_object_or_404(LessonSchedule, pk=lesson_id)
     
@@ -188,6 +177,8 @@ def delete_lesson_materials(request, lesson_id):
     return HttpResponse()
 
 
+@login_required(login_url="/login/")
+@permission_required("scheduling.can_give_homework")
 def set_homework(request, lesson_id):
     lesson_record = LessonSchedule.objects.get(id=lesson_id)
 
@@ -339,3 +330,29 @@ def get_nonatt_dataframe(term_start_date, term_end_date, student):
     nonatt_dataframe["Общая сумма"] = nonatt_dataframe["Общая сумма"].astype(int)
     nonatt_dataframe["Всего уроков"] = nonatt_dataframe["Всего уроков"].astype(int)
     return nonatt_dataframe
+
+
+def get_grades_dataframe(term_start_date, term_end_date, student):
+    grade_records = LessonResults.objects.filter(
+        Q(student = student) & 
+        Q(lesson__lesson_holding_datetime_start__gte = term_start_date) & 
+        Q(lesson__lesson_holding_datetime_start__lte = term_end_date) &
+        Q(grade__isnull = False)
+    )
+
+    indexes_list = list(set(LessonSchedule.objects.filter(
+        Q(lesson_holding_datetime_start__gte = term_start_date) & 
+        Q(lesson_holding_datetime_start__lte = term_end_date)
+    ).values_list("discipline_teacher__discipline__discipline_name", flat=True)))
+    
+    columns_list = [1, 2, 3, 4, 5]
+    grades_dataframe = pd.DataFrame(0, index=indexes_list, columns=columns_list)
+
+    for grade_record in grade_records:
+        grade = grade_record.grade
+        discipline = grade_record.lesson.discipline_teacher.discipline.discipline_name
+
+        grades_dataframe.at[discipline, grade] += 1
+
+    grades_dataframe["Средний балл"] = grades_dataframe.apply(lambda row: row.dot(row.index.astype(int)), axis=1) / grades_dataframe.sum(axis=1)
+    return grades_dataframe   

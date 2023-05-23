@@ -9,27 +9,40 @@
         <a class="navbar-brand" href="/">Student Journal</a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if perms.users.add_appuser %}
                 <li class="nav-item">
                     <a class="nav-link active" href="/teachers/">Учителя</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="/students/">Ученики</a>
                 </li>
+                {% endif %}
+                {% if perms.users.view_classcode %}
                 <li class="nav-item">
                     <a class="nav-link active" href="/classes/">Классы</a>
                 </li>
+                {% endif %}
+                {% if perms.scheduling.can_view_class_journal and not perms.scheduling.add_lessonschedule %}
                 <li class="nav-item">
-                    <a name="student_journal_link" id="id_student_journal_link" class="nav-link active" href="/schedule/student_journal/{{ week_start_date }}/{{ week_end_date }}/">Дневник</a>
+                    <a class="nav-link active" href="/schedule/">Классный журнал</a>
                 </li>
+                {% elif perms.scheduling.add_lessonschedule %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Расписание
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                      <li><a class="dropdown-item" href="/schedule/">Составление расписания</a></li>
+                      <li><a class="dropdown-item" href="/schedule/">Составление расписания и журналы</a></li>
                       <li><a class="dropdown-item" href="/schedule/edit_bell_quarter/">Звонки и четверти</a></li>
                     </ul>
                 </li>
+                {% endif %}
+                {% if perms.scheduling.can_view_student_journal %}
+                <li class="nav-item">
+                    <a name="student_journal_link" id="id_student_journal_link" class="nav-link active" href="/schedule/student_journal/{{ week_start_date }}/{{ week_end_date }}/">Дневник</a>
+                </li>
+                {% endif %}
+                
             </ul>
         </div>
         <div class="navbar-text ms-auto me-0 ">

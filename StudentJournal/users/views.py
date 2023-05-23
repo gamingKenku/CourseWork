@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
 from users.forms import LoginForm, UserForm, DisciplineNameForm, ClassCodeForm
 from users.models import AppUser, DisciplineName, DisciplineTeacher, ClassCode, ClassStudent, Parents
@@ -21,7 +21,7 @@ roles_to_russian_dict = {
 }
 
 
-@login_required(login_url="login/")
+@login_required(login_url="/login/")
 def index(request):
     today_date = datetime.date.today()
     week_start_date = today_date
@@ -62,10 +62,13 @@ def logout_user(request):
     return HttpResponseRedirect("/login/")
 
 
+@login_required(login_url="/login/")
 def account(request):
     return render(request, "account.html", context={})
 
 
+@login_required(login_url="/login/")
+@permission_required("users.view_appuser", "/login/")
 def teachers_view(request):
     teachers = AppUser.objects.filter(Q(groups__name="teacher") | Q(groups__name="director") | Q(groups__name="head_teacher"))
     disciplines = DisciplineName.objects.all()
@@ -112,6 +115,8 @@ def teachers_view(request):
     return render(request, "teachers.html", context=context)
 
 
+@login_required(login_url="/login/")
+@permission_required("users.add_disciplinename", "/login/")
 def add_discipline(request):
     if request.method == "POST":
         discipline_form = DisciplineNameForm(request.POST)
@@ -123,6 +128,8 @@ def add_discipline(request):
     return HttpResponseRedirect("/teachers/")
 
 
+@login_required(login_url="/login/")
+@permission_required("users.add_disciplineteacher", "/login/")
 def add_discipline_to_teacher(request):
     if request.method == "POST":
         teacher_id = request.POST.get("teacher_select")
@@ -135,12 +142,16 @@ def add_discipline_to_teacher(request):
     return HttpResponseRedirect("/teachers/")
 
 
+@login_required(login_url="/login/")
+@permission_required("users.delete_disciplineteacher", "/login/")
 def detach_discipline(request, discipline_record_id):
     discipline_record = get_object_or_404(DisciplineTeacher, id=discipline_record_id)
     discipline_record.delete()
     return HttpResponseRedirect("/")
 
 
+@login_required(login_url="/login/")
+@permission_required("users.view_appuser", "/login/")
 def students_view(request):
     students_classes = ClassStudent.objects.all().order_by("class_code__class_code", "student__first_name")
     teachers = AppUser.objects.filter(Q(groups__name="teacher") | Q(groups__name="director") | Q(groups__name="head_teacher"))
@@ -212,6 +223,8 @@ def students_view(request):
     return render(request, "students.html", context=context)
 
 
+@login_required(login_url="/login/")
+@permission_required("users.add_classcode", "/login/")
 def add_class(request):
     if request.method == "POST":
         class_code_form = ClassCodeForm(request.POST)
@@ -225,6 +238,7 @@ def add_class(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+@login_required(login_url="/login/")
 def user_info(request, user_id):
     user = AppUser.objects.get(id=user_id)
     context = {}
@@ -245,6 +259,8 @@ def user_info(request, user_id):
     return render(request, "user_details.html", context)
 
 
+@login_required(login_url="/login/")
+@permission_required("users.change_appuser", "/login/")
 def user_edit(request, user_id):
     user = AppUser.objects.get(id=user_id)
     context = {}
@@ -264,6 +280,9 @@ def user_edit(request, user_id):
 
     return render(request, "user_edit.html", context)
 
+
+@login_required(login_url="/login/")
+@permission_required("users.view_classcode", "/login/")
 def classes(request):
     classes = ClassCode.objects.all().order_by("class_code")
     teachers = AppUser.objects.filter(Q(groups__name="teacher") | Q(groups__name="director") | Q(groups__name="head_teacher"))
@@ -290,6 +309,8 @@ def classes(request):
     return render(request, "classes.html", context=context)
 
 
+@login_required(login_url="/login/")
+@permission_required("users.view_classcode", "/login/")
 def class_info(request, class_id):
     students_class = ClassCode.objects.get(id=class_id)
     students_records = ClassStudent.objects.filter(class_code=students_class)
@@ -298,6 +319,8 @@ def class_info(request, class_id):
     return render(request, "class_info.html", context)
 
 
+@login_required(login_url="/login/")
+@permission_required("users.change_classcode", "/login/")
 def class_advance(request, class_id):
     students_class = ClassCode.objects.get(id=class_id)
     integer_code = int(students_class.class_code[:-1])
@@ -314,6 +337,8 @@ def class_advance(request, class_id):
     return HttpResponseRedirect("/classes/%d" % class_id)
 
 
+@login_required(login_url="/login/")
+@permission_required("scheduling.change_classcode", "/login/")
 def all_classes_advance(request):
     students_classes = ClassCode.objects.all().filter(status="ST").order_by("-class_code")
 
