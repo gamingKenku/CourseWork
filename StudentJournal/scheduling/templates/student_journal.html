@@ -29,13 +29,14 @@
             <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
-                        <th class="text-center" colspan="4">Понедельник</th>
+                        <th class="text-center" colspan="5">Понедельник</th>
                     </tr>
                     <tr>
                         <th style="width:5%">#</th>
                         <th style="width:10%">Время</th>
                         <th>Предмет</th>
                         <th style="width:10%">Оценка</th>
+                        <th style="width: 10%;">Кабинет</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,11 +53,17 @@
                             {{ lesson.1|get_grade|default:"" }}
                             {{ lesson.1|get_nonatt_reason|default:"" }}
                         </td>
+                        <td class="classroom">
+                            {{ lesson.1.classroom|default:"" }}
+                        </td>
                         {% else %}
                         <td>
                             
                         </td>
                         <td class="grade">
+
+                        </td>
+                        <td class="classroom">
 
                         </td>
                         {% endif %}
@@ -67,13 +74,14 @@
             <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
-                        <th class="text-center" colspan="4">Среда</th>
+                        <th class="text-center" colspan="5">Среда</th>
                     </tr>
                     <tr>
                         <th style="width:5%">#</th>
                         <th style="width:10%">Время</th>
                         <th>Предмет</th>
                         <th style="width:10%">Оценка</th>
+                        <th style="width: 10%;">Кабинет</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,11 +98,17 @@
                             {{ lesson.1|get_grade|default:"" }}
                             {{ lesson.1|get_nonatt_reason|default:"" }}
                         </td>
+                        <td class="classroom">
+                            {{ lesson.1.classroom|default:"" }}
+                        </td>
                         {% else %}
                         <td>
                             
                         </td>
                         <td class="grade">
+
+                        </td>
+                        <td class="classroom">
 
                         </td>
                         {% endif %}
@@ -105,13 +119,14 @@
             <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
-                        <th class="text-center" colspan="4">Пятница</th>
+                        <th class="text-center" colspan="5">Пятница</th>
                     </tr>
                     <tr>
                         <th style="width:5%">#</th>
                         <th style="width:10%">Время</th>
                         <th>Предмет</th>
                         <th style="width:10%">Оценка</th>
+                        <th style="width: 10%;">Кабинет</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -128,11 +143,17 @@
                             {{ lesson.1|get_grade|default:"" }}
                             {{ lesson.1|get_nonatt_reason|default:"" }}
                         </td>
+                        <td class="classroom">
+                            {{ lesson.1.classroom|default:"" }}
+                        </td>
                         {% else %}
                         <td>
                             
                         </td>
                         <td class="grade">
+
+                        </td>
+                        <td class="classroom">
 
                         </td>
                         {% endif %}
@@ -145,13 +166,14 @@
             <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
-                        <th class="text-center" colspan="4">Вторник</th>
+                        <th class="text-center" colspan="5">Вторник</th>
                     </tr>
                     <tr>
                         <th style="width:5%">#</th>
                         <th style="width:10%">Время</th>
                         <th>Предмет</th>
                         <th style="width:10%">Оценка</th>
+                        <th style="width: 10%;">Кабинет</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -168,11 +190,17 @@
                             {{ lesson.1|get_grade|default:"" }}
                             {{ lesson.1|get_nonatt_reason|default:"" }}
                         </td>
+                        <td class="classroom">
+                            {{ lesson.1.classroom|default:"" }}
+                        </td>
                         {% else %}
                         <td>
                             
                         </td>
                         <td class="grade">
+
+                        </td>
+                        <td class="classroom">
 
                         </td>
                         {% endif %}
@@ -183,13 +211,14 @@
             <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
-                        <th class="text-center" colspan="4">Четверг</th>
+                        <th class="text-center" colspan="5">Четверг</th>
                     </tr>
                     <tr>
                         <th style="width:5%">#</th>
                         <th style="width:10%">Время</th>
                         <th>Предмет</th>
                         <th style="width:10%">Оценка</th>
+                        <th style="width: 10%;">Кабинет</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -206,11 +235,17 @@
                             {{ lesson.1|get_grade|default:"" }}
                             {{ lesson.1|get_nonatt_reason|default:"" }}
                         </td>
+                        <td class="classroom">
+                            {{ lesson.1.classroom|default:"" }}
+                        </td>
                         {% else %}
                         <td>
                             
                         </td>
                         <td class="grade">
+
+                        </td>
+                        <td class="classroom">
 
                         </td>
                         {% endif %}
@@ -221,13 +256,14 @@
             <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
-                        <th class="text-center" colspan="4">Суббота</th>
+                        <th class="text-center" colspan="5">Суббота</th>
                     </tr>
                     <tr>
                         <th style="width:5%">#</th>
                         <th style="width:10%">Время</th>
                         <th>Предмет</th>
                         <th style="width:10%">Оценка</th>
+                        <th style="width: 10%;">Кабинет</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -244,11 +280,17 @@
                             {{ lesson.1|get_grade|default:"" }}
                             {{ lesson.1|get_nonatt_reason|default:"" }}
                         </td>
+                        <td class="classroom">
+                            {{ lesson.1.classroom|default:"" }}
+                        </td>
                         {% else %}
                         <td>
                             
                         </td>
                         <td class="grade">
+
+                        </td>
+                        <td class="classroom">
 
                         </td>
                         {% endif %}

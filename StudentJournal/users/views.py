@@ -136,8 +136,7 @@ def add_discipline_to_teacher(request):
         teacher = AppUser.objects.get(id=teacher_id)
         discipline_id = request.POST.get("discipline_select")
         discipline = DisciplineName.objects.get(id=discipline_id)
-        discipline_teacher = DisciplineTeacher.objects.create(teacher=teacher, discipline=discipline)
-        discipline_teacher.save()
+        DisciplineTeacher.objects.get_or_create(teacher=teacher, discipline=discipline)
     
     return HttpResponseRedirect("/teachers/")
 

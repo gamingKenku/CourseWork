@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, render
-from django.db.models import Q, QuerySet
-from django.http import FileResponse, HttpResponse, HttpResponseRedirect, Http404, JsonResponse
+from django.db.models import Q
+from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
 from scheduling.forms import LessonMaterialUploadForm
 from scheduling.models import LessonSchedule
 from scheduling.schedule_creator import QuarterSchedule
