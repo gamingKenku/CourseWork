@@ -45,14 +45,19 @@ def login_user(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            username = request.POST.get("username")
-            password = request.POST.get("password")
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
                 return HttpResponseRedirect("/")
-    
-    form = LoginForm()
+            else:
+                form.add_error(None, "Неправильное имя пользователя или пароль.")
+        else:
+            print(form.errors)
+    else:
+        form = LoginForm()
+
     return render(request, 'login.html', context={"form": form})
 
 
@@ -93,15 +98,10 @@ def teachers_view(request):
             print(group_name)
             group = Group.objects.get(name=group_name)
             teacher.groups.add(group)
-        else:
-            print(teacher_form.errors)
-            request.session['teacher_form_post_data'] = request.POST
 
-    if 'teacher_form_post_data' in request.session:
-        teacher_form = UserForm(request.session['teacher_form_post_data'])
-        del request.session['teacher_form_post_data']
+            return HttpResponseRedirect("/teachers/")
     else:
-        teacher_form = UserForm
+        teacher_form = UserForm()
 
     discipline_form = DisciplineNameForm()
     context = {
@@ -121,7 +121,7 @@ def add_discipline(request):
     if request.method == "POST":
         discipline_form = DisciplineNameForm(request.POST)
         if discipline_form.is_valid():
-            discipline_name = request.POST.get("discipline_name")
+            discipline_name = discipline_form.cleaned_data.get("discipline_name")
             discipline = DisciplineName.objects.create(discipline_name=discipline_name)
             discipline.save()
     
@@ -170,14 +170,12 @@ def students_view(request):
 
             if len(set([student.username, mother.username, father.username])) < 3:
                 usernames_valid = False
-                request.session['student_form_post_data'] = request.POST
                 student_form.add_error("username", "Имена пользователей должны быть разными.")
                 mother_form.add_error("username", "Имена пользователей должны быть разными.")
                 father_form.add_error("username", "Имена пользователей должны быть разными.")
             
             if len(set([student.email, mother.email, father.email])) < 3:
                 emails_valid = False
-                request.session['student_form_post_data'] = request.POST
                 student_form.add_error("email", "Адреса электронных почт должны быть разными.")
                 mother_form.add_error("email", "Адреса электронных почт должны быть разными.")
                 father_form.add_error("email", "Адреса электронных почт должны быть разными.")
@@ -195,14 +193,8 @@ def students_view(request):
                 class_code = ClassCode.objects.get(id=request.POST.get("class_select"))
                 ClassStudent.objects.create(class_code=class_code, student=student)
                 Parents.objects.create(student=student, mother=mother, father=father)
-        else:
-            request.session['student_form_post_data'] = request.POST
 
-    if 'student_form_post_data' in request.session and (student_form.errors or mother_form.errors or father_form.errors):
-        student_form = UserForm(request.session['student_form_post_data'], prefix="student_form")
-        mother_form = UserForm(request.session['student_form_post_data'], prefix="mother_form")
-        father_form = UserForm(request.session['student_form_post_data'], prefix="father_form")        
-        del request.session['student_form_post_data']
+            return HttpResponseRedirect("/students/")
     else:
         student_form = UserForm(prefix="student_form")
         mother_form = UserForm(prefix="mother_form")

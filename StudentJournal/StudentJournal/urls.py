@@ -40,8 +40,6 @@ urlpatterns = [
     path('classes/<int:class_id>/advance/', users.views.class_advance),
     path('classes/all_classes_advance/', users.views.all_classes_advance),
     path('schedule/create/<int:class_id>/', scheduling.views.create_schedule),
-    path('schedule/edit/<int:class_id>/', scheduling.views.edit_schedule),
-    path('schedule/reset/<int:class_id>/', scheduling.views.reset_schedule),
     path('schedule/edit_bell_quarter/', scheduling.views.bell_quarter_edit),
     path('schedule/', scheduling.views.schedule_menu),
     path('discipline_teacher/<int:discipline_id>/', scheduling.views.get_teachers_for_discipline),

@@ -67,14 +67,6 @@ def get_teachers_for_discipline(request, discipline_id):
     return JsonResponse({'teachers': teacher_list})
 
 
-def edit_schedule(request, class_id):
-    pass
-
-
-def reset_schedule(request, class_id):
-    pass
-
-
 @login_required(login_url="/login/")
 @permission_required("scheduling.change_lessonschedule")
 def bell_quarter_edit(request):

@@ -54,3 +54,11 @@ def hm_format_time(value):
     if type(value) == str:
         value = datetime.time.fromisoformat(value)
     return datetime.time.strftime(value, '%H:%M')
+
+
+@register.simple_tag
+def closest_weekday(weekday):
+    date = datetime.date.today()
+    days_until_weekday = (weekday - date.weekday()) % 7
+    closest_weekday = date + datetime.timedelta(days=days_until_weekday)
+    return closest_weekday.strftime('%Y-%m-%d')

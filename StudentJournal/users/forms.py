@@ -5,8 +5,9 @@ from bootstrap_datepicker_plus.widgets import DatePickerInput
 from users.methods.defs import num_years
 
 class LoginForm(forms.Form):
-    username = forms.CharField(label="Имя пользователя:")
-    password = forms.CharField(label="Пароль:", widget=forms.PasswordInput)
+    error_css_class = 'text_danger'
+    username = forms.CharField(label="", widget=forms.TextInput(attrs={"placeholder": "Имя пользователя", "class": "form-control mb-3 mt-3"}))
+    password = forms.CharField(label="", widget=forms.PasswordInput(attrs={"placeholder": "Пароль",  "class": "form-control mb-3 mt-3"}))
 
 
 class UserForm(ModelForm):

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 {% load static %}
+{% load filters %}
 {{ form.media }}
 
 {% block navbar %}
@@ -39,10 +40,9 @@
                 {% endif %}
                 {% if perms.scheduling.can_view_student_journal %}
                 <li class="nav-item">
-                    <a name="student_journal_link" id="id_student_journal_link" class="nav-link active" href="/schedule/student_journal/{{ week_start_date }}/{{ week_end_date }}/">Дневник</a>
+                    <a name="student_journal_link" id="id_student_journal_link" class="nav-link active" href="/schedule/student_journal/{% closest_weekday 0 %}/{% closest_weekday 6 %}/">Дневник</a>
                 </li>
                 {% endif %}
-                
             </ul>
         </div>
         <div class="navbar-text ms-auto me-0 ">

@@ -9,7 +9,7 @@
         <div class="col-md-8">
             <h4>Редактирование пользователя</h4>
             {{ user_form.media }}
-            <form action="/users/{{ user.id }}/edit" method="post" class="form" autocomplete="off">
+            <form action="/users/{{ user.id }}/edit/" method="post" class="form" autocomplete="off">
                 {% csrf_token %}
                 {% bootstrap_form user_form %}
                 {% if user|has_group:"teacher" or user|has_group:"head_teacher" or user|has_group:"director" %}
