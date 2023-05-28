@@ -97,11 +97,30 @@ class QuartersScheduleForm(forms.Form):
 
 
 class ClassPicker(forms.Form):
-    class_code = forms.ModelChoiceField(ClassCode.objects.all(), label="")
+    class_code = forms.ModelChoiceField(ClassCode.objects.none(), label="")
 
+    def __init__(self, teacher=None, *args, **kwargs):
+        super(ClassPicker, self).__init__(*args, **kwargs)
+
+        if teacher:
+            teached_classes = LessonSchedule.objects.filter(discipline_teacher__teacher = teacher).values_list("class_code", flat=True).distinct()
+            print(teached_classes)
+            homeroomed_classes = ClassCode.objects.filter(homeroom_teacher=teacher)
+
+            queryset = teached_classes.union(homeroomed_classes)
+
+            self.fields['class_code'].queryset = queryset
 
 class DisciplineNamePicker(forms.Form):
-    discipline_name = forms.ModelChoiceField(DisciplineName.objects.all(), label="")
+    discipline_name = forms.ModelChoiceField(DisciplineName.objects.none(), label="")
+
+    def __init__(self, teacher=None, *args, **kwargs):
+        super(DisciplineNamePicker, self).__init__(*args, **kwargs)
+
+        if teacher:
+            queryset = DisciplineTeacher.objects.filter(teacher = teacher).values_list("discipline__discipline_name", flat=True).distinct()
+
+            self.fields['discipline_name'].queryset = queryset
 
 
 class TermPicker(forms.Form):

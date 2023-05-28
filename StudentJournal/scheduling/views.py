@@ -121,8 +121,8 @@ def bell_quarter_edit(request):
 @permission_required("scheduling.view_lessonschedule")
 def schedule_menu(request):
     context = {
-        "class_picker": ClassPicker(),
-        "discipline_picker": DisciplineNamePicker(),
+        "class_picker": ClassPicker(teacher=request.user),
+        "discipline_picker": DisciplineNamePicker(teacher=request.user),
         "term_picker": TermPicker(),
     }
     return render(request, "schedule_menu.html", context)

@@ -131,3 +131,11 @@ class DisciplineTeacher(models.Model):
 
     class Meta:
         unique_together = (("teacher", "discipline"),)
+
+
+class ClassDiscipline(models.Model):
+    class_code = models.ForeignKey(ClassCode, on_delete=models.CASCADE, related_name="class_to_discipline")
+    discipline = models.ForeignKey(DisciplineName, on_delete=models.CASCADE, related_name="discpline_to_class")
+
+    class Meta:
+        unique_together = (("class_code", "discipline"),)
