@@ -54,9 +54,9 @@ def get_week_numbers(start_date, end_date):
     current_date = start_date
 
     while current_date <= end_date:
-        week_number = current_date.isocalendar()[1]  # Get the ISO week number
+        week_number = current_date.isocalendar()[1]
         week_numbers.append(week_number)
-        current_date += datetime.timedelta(days=7)  # Move to the next week
+        current_date += datetime.timedelta(days=7) 
 
     return week_numbers
 
