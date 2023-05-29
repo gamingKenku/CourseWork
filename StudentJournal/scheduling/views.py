@@ -5,7 +5,7 @@ from .forms import LessonSheduleForm, LessonBellScheduleForm, QuartersScheduleFo
 from .models import LessonSchedule
 from django.forms import formset_factory
 from django.contrib.auth.decorators import login_required, permission_required
-from users.models import ClassCode, AppUser, DisciplineTeacher, ClassStudent, DisciplineName
+from users.models import ClassCode, AppUser, DisciplineTeacher, ClassStudent, DisciplineName, ClassDisciplines
 from django.http import JsonResponse
 from django.db.models import Q
 import datetime
@@ -43,6 +43,9 @@ def create_schedule(request, class_id):
             week.reset_and_generate_schedule_records(term_number)
             return HttpResponseRedirect("/")
     else:
+        class_num = int(class_code.class_code[:-1])
+        queryset = ClassDisciplines.objects.get(class_num=class_num).studied_disciplines.all().order_by("discipline_name")
+
         for day in week.schedule.keys():
             formset = LessonScheduleFormset(prefix=day)
 
@@ -51,6 +54,7 @@ def create_schedule(request, class_id):
                 form.fields["start_time"].initial = week.schedule[day][i].start_time
                 form.fields["end_time"].initial = week.schedule[day][i].end_time
                 form.fields["class_code"].initial = class_code
+                form.fields["discipline"].queryset = queryset
                 i += 1
 
             context[f"{day}_lesson_form"] = formset
@@ -63,8 +67,33 @@ def create_schedule(request, class_id):
 @permission_required("scheduling.add_lessonschedule")
 def get_teachers_for_discipline(request, discipline_id):
     discipline_teacher_records = DisciplineTeacher.objects.filter(discipline=discipline_id)
-    teacher_list = [{'id': discipline_teacher_record.teacher.id, 'name': discipline_teacher_record.teacher.__str__()} for discipline_teacher_record in discipline_teacher_records]
+    teacher_list = [
+        {'id': discipline_teacher_record.teacher.id, 'name': discipline_teacher_record.teacher.__str__()} for discipline_teacher_record in discipline_teacher_records
+        ]
     return JsonResponse({'teachers': teacher_list})
+
+
+def discipline_choices(request, class_id, term):
+    if int(term) < 1 or int(term) > 4:
+        raise Http404("Четверть не найдена")
+    
+    class_code = get_object_or_404(ClassCode, pk=class_id)
+
+    term_start_date = QuarterSchedule.quarter_schedule[int(term) - 1]["start_date"]
+    term_end_date = QuarterSchedule.quarter_schedule[int(term) - 1]["end_date"] + datetime.timedelta(days=1)
+
+    lesson_records = LessonSchedule.objects.filter(
+        Q(lesson_holding_datetime_start__gte = term_start_date),
+        Q(lesson_holding_datetime_start__lte = term_end_date),
+        Q(class_code=class_code)
+    )
+    discipline_ids = lesson_records.values("discipline_teacher__discipline__id")
+    disciplines = DisciplineName.objects.filter(id__in = discipline_ids).distinct()
+    discipline_list = [
+        {'id': discipline.id, 'name': discipline.__str__()} for discipline in disciplines
+        ]
+    
+    return JsonResponse({"disciplines": discipline_list})
 
 
 @login_required(login_url="/login/")
@@ -148,7 +177,7 @@ def student_journal(request, week_start_date, week_end_date):
         return HttpResponseBadRequest("Ошибка в обработке даты.")
     
     try:
-        schedule_dict = WeekClassSchedule.get_schedule_as_context(week_start_date, week_end_date, user_class_code)
+        schedule_dict = WeekClassSchedule.get_schedule_as_context(week_start_date, week_end_date, class_code=user_class_code)
     except ValueError:
         raise Http404("Учебная неделя не найдена.")
     
@@ -165,5 +194,27 @@ def student_journal(request, week_start_date, week_end_date):
     return render(request, "student_journal.html", context)
 
 
+@login_required(login_url="/login/")
+@permission_required("scheduling.can_view_class_journal")
+def teacher_schedule(request, teacher_id, term):
+    teacher = get_object_or_404(AppUser, pk=teacher_id)
 
+    if int(term) < 1 or int(term) > 4:
+        raise Http404("Четверть не найдена")
 
+    week_start_date = QuarterSchedule.quarter_schedule[term - 1]["start_date"]
+    while week_start_date.weekday() != 0:
+        week_start_date += datetime.timedelta(days=1)
+    week_end_date = week_start_date + datetime.timedelta(days=6)
+
+    try:
+        schedule_dict = WeekClassSchedule.get_schedule_as_context(week_start_date, week_end_date, teacher=teacher)
+    except ValueError:
+        raise Http404("Расписание не найдено найдена.")
+    
+    context = {
+        "term": term
+    }
+    context.update(schedule_dict)
+    
+    return render(request, "teacher_schedule.html", context)

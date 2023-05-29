@@ -1,0 +1,280 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-3 mb-3">
+        <h4>Ваше расписание на четверть {{ term }}.</h4>
+        <div class="col-md-5">
+            <table class="table table-hover border border-dark">
+                <thead>
+                    <tr>
+                        <th class="text-center" colspan="5">Понедельник</th>
+                    </tr>
+                    <tr>
+                        <th style="width:5%">#</th>
+                        <th style="width:10%">Время</th>
+                        <th>Предмет</th>
+                        <th style="width:10%">Класс</th>
+                        <th style="width: 10%;">Кабинет</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in monday_lessons %}
+                    <tr class="student-journal">
+                        <td>{{ lesson.0 }}</td>
+                        <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
+                        {% if lesson.1 != None %}
+                        <td>
+                            <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
+                        </td>
+                        <td class="classroom">
+                            {{ lesson.1.class_code }}
+                        </td>
+                        <td class="classroom">
+                            {{ lesson.1.classroom|default:"" }}
+                        </td>
+                        {% else %}
+                        <td>
+                            
+                        </td>
+                        <td class="classroom">
+
+                        </td>
+                        <td class="classroom">
+
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table class="table table-hover border border-dark">
+                <thead>
+                    <tr>
+                        <th class="text-center" colspan="5">Среда</th>
+                    </tr>
+                    <tr>
+                        <th style="width:5%">#</th>
+                        <th style="width:10%">Время</th>
+                        <th>Предмет</th>
+                        <th style="width:10%">Класс</th>
+                        <th style="width: 10%;">Кабинет</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in wednesday_lessons %}
+                    <tr class="student-journal">
+                        <td>{{ lesson.0 }}</td>
+                        <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
+                        {% if lesson.1 != None %}
+                        <td>
+                            <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
+                        </td>
+                        <td class="classroom">
+                            {{ lesson.1.class_code }}
+                        </td>
+                        <td class="classroom">
+                            {{ lesson.1.classroom|default:"" }}
+                        </td>
+                        {% else %}
+                        <td>
+                            
+                        </td>
+                        <td class="classroom">
+
+                        </td>
+                        <td class="classroom">
+
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table class="table table-hover border border-dark">
+                <thead>
+                    <tr>
+                        <th class="text-center" colspan="5">Пятница</th>
+                    </tr>
+                    <tr>
+                        <th style="width:5%">#</th>
+                        <th style="width:10%">Время</th>
+                        <th>Предмет</th>
+                        <th style="width:10%">Класс</th>
+                        <th style="width: 10%;">Кабинет</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in friday_lessons %}
+                    <tr class="student-journal">
+                        <td>{{ lesson.0 }}</td>
+                        <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
+                        {% if lesson.1 != None %}
+                        <td>
+                            <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
+                        </td>
+                        <td class="classroom">
+                            {{ lesson.1.class_code }}
+                        </td>
+                        <td class="classroom">
+                            {{ lesson.1.classroom|default:"" }}
+                        </td>
+                        {% else %}
+                        <td>
+                            
+                        </td>
+                        <td class="classroom">
+
+                        </td>
+                        <td class="classroom">
+
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-5">
+            <table class="table table-hover border border-dark">
+                <thead>
+                    <tr>
+                        <th class="text-center" colspan="5">Вторник</th>
+                    </tr>
+                    <tr>
+                        <th style="width:5%">#</th>
+                        <th style="width:10%">Время</th>
+                        <th>Предмет</th>
+                        <th style="width:10%">Класс</th>
+                        <th style="width: 10%;">Кабинет</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in tuesday_lessons %}
+                    <tr class="student-journal">
+                        <td>{{ lesson.0 }}</td>
+                        <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
+                        {% if lesson.1 != None %}
+                        <td>
+                            <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
+                        </td>
+                        <td class="classroom">
+                            {{ lesson.1.class_code }}
+                        </td>
+                        <td class="classroom">
+                            {{ lesson.1.classroom|default:"" }}
+                        </td>
+                        {% else %}
+                        <td>
+                            
+                        </td>
+                        <td class="classroom">
+
+                        </td>
+                        <td class="classroom">
+
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table class="table table-hover border border-dark">
+                <thead>
+                    <tr>
+                        <th class="text-center" colspan="5">Четверг</th>
+                    </tr>
+                    <tr>
+                        <th style="width:5%">#</th>
+                        <th style="width:10%">Время</th>
+                        <th>Предмет</th>
+                        <th style="width:10%">Класс</th>
+                        <th style="width: 10%;">Кабинет</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in thursday_lessons %}
+                    <tr class="student-journal">
+                        <td>{{ lesson.0 }}</td>
+                        <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
+                        {% if lesson.1 != None %}
+                        <td>
+                            <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
+                        </td>
+                        <td class="classroom">
+                            {{ lesson.1.class_code }}
+                        </td>
+                        <td class="classroom">
+                            {{ lesson.1.classroom|default:"" }}
+                        </td>
+                        {% else %}
+                        <td>
+                            
+                        </td>
+                        <td class="classroom">
+
+                        </td>
+                        <td class="classroom">
+
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table class="table table-hover border border-dark">
+                <thead>
+                    <tr>
+                        <th class="text-center" colspan="5">Суббота</th>
+                    </tr>
+                    <tr>
+                        <th style="width:5%">#</th>
+                        <th style="width:10%">Время</th>
+                        <th>Предмет</th>
+                        <th style="width:10%">Класс</th>
+                        <th style="width: 10%;">Кабинет</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in saturday_lessons %}
+                    <tr class="student-journal">
+                        <td>{{ lesson.0 }}</td>
+                        <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
+                        {% if lesson.1 != None %}
+                        <td>
+                            <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
+                            <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
+                        </td>
+                        <td class="classroom">
+                            {{ lesson.1.class_code }}
+                        </td>
+                        <td class="classroom">
+                            {{ lesson.1.classroom|default:"" }}
+                        </td>
+                        {% else %}
+                        <td>
+                            
+                        </td>
+                        <td class="classroom">
+
+                        </td>
+                        <td class="classroom">
+
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

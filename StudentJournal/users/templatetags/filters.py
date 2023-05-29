@@ -57,8 +57,14 @@ def hm_format_time(value):
 
 
 @register.simple_tag
-def closest_weekday(weekday):
-    date = datetime.date.today()
-    days_until_weekday = (weekday - date.weekday()) % 7
-    closest_weekday = date + datetime.timedelta(days=days_until_weekday)
-    return closest_weekday.strftime('%Y-%m-%d')
+def current_monday():
+    today = datetime.date.today()
+    monday = today - datetime.timedelta(days=today.weekday())
+    return monday.strftime('%Y-%m-%d')
+
+
+@register.simple_tag
+def current_sunday():
+    today = datetime.date.today()
+    sunday = today + datetime.timedelta(days=(6 - today.weekday()))
+    return sunday.strftime('%Y-%m-%d')

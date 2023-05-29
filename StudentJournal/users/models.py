@@ -73,6 +73,21 @@ class Parents(models.Model):
         unique_together = (("student", "father", "mother"),)
 
 
+class DisciplineName(models.Model):
+    discipline_name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self) -> str:
+        return self.discipline_name
+
+
+class DisciplineTeacher(models.Model):
+    discipline = models.ForeignKey(DisciplineName, on_delete=models.CASCADE, related_name="discipline_to_teacher")
+    teacher = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name="teacher_to_discipline")
+
+    class Meta:
+        unique_together = (("teacher", "discipline"),)
+
+
 class ClassCode(models.Model):
     STUDYING = "ST"
     GRADUATED = "GR"
@@ -81,7 +96,7 @@ class ClassCode(models.Model):
         (GRADUATED, "Выпущен"),
     ]
 
-    class_code = models.CharField(max_length=5)
+    class_code = models.CharField(max_length=3)
     homeroom_teacher = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name="homeroom_teacher_to_class")
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=STUDYING)
     graduated_year = models.IntegerField(null=True)
@@ -89,7 +104,6 @@ class ClassCode(models.Model):
     def clean(self):
         super().clean()
         if self.status == self.STUDYING:
-            # Check if there are other records with the same class_code and status='ST'
             if (
                 ClassCode.objects.filter(
                     class_code=self.class_code, status=self.STUDYING
@@ -98,7 +112,7 @@ class ClassCode(models.Model):
                 .exists()
             ):
                 raise ValidationError(
-                    "There can only be one record with the same class code and status 'ST'."
+                    "Такой класс уже существует в системе и ещё не выпустился."
                 )
 
     def save(self, *args, **kwargs):
@@ -115,27 +129,8 @@ class ClassStudent(models.Model):
 
     class Meta:
         unique_together = (("class_code", "student"),)
-        ordering = ["class_code"]
 
 
-class DisciplineName(models.Model):
-    discipline_name = models.CharField(max_length=50, unique=True)
-
-    def __str__(self) -> str:
-        return self.discipline_name
-
-
-class DisciplineTeacher(models.Model):
-    discipline = models.ForeignKey(DisciplineName, on_delete=models.CASCADE, related_name="discipline_to_teacher")
-    teacher = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name="teacher_to_discipline")
-
-    class Meta:
-        unique_together = (("teacher", "discipline"),)
-
-
-class ClassDiscipline(models.Model):
-    class_code = models.ForeignKey(ClassCode, on_delete=models.CASCADE, related_name="class_to_discipline")
-    discipline = models.ForeignKey(DisciplineName, on_delete=models.CASCADE, related_name="discpline_to_class")
-
-    class Meta:
-        unique_together = (("class_code", "discipline"),)
+class ClassDisciplines(models.Model):
+    class_num = models.SmallIntegerField(null=False, blank=False, unique=True)
+    studied_disciplines = models.ManyToManyField(DisciplineName, blank=True)

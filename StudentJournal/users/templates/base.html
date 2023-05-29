@@ -13,7 +13,7 @@
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <link rel="stylesheet" href="{% static 'scheduling/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <title>Document</title>
 </head>
 <body>
@@ -22,32 +22,5 @@
 
     {% block content %}
     {% endblock content %}
-    <script>
-        function formatDateToYYYYMMDD(date) {
-            let year = date.getFullYear();
-            let month = String(date.getMonth() + 1).padStart(2, '0');
-            let day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        var linkElement = document.getElementById("id_student_journal_link");
-        var now = new Date(); 
-        var week_start_date = new Date();
-        var week_end_date = new Date();
-    
-        while (week_start_date.getDay() != 1) {
-            week_start_date.setDate(week_start_date.getDate() - 1);
-        }
-        while (week_end_date.getDay() != 0) {
-            week_end_date.setDate(week_end_date.getDate() + 1);
-        }
-
-        week_start_date = formatDateToYYYYMMDD(week_start_date);
-        week_end_date = formatDateToYYYYMMDD(week_end_date);
-
-        var url = "/schedule/student_journal/" + week_start_date + "/" + week_end_date + "/";
-    
-        linkElement?.setAttribute("href", url);
-    </script>
 </body>
 </html>

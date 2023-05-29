@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
-from users.forms import LoginForm, UserForm, DisciplineNameForm, ClassCodeForm
-from users.models import AppUser, DisciplineName, DisciplineTeacher, ClassCode, ClassStudent, Parents
+from users.forms import LoginForm, UserForm, DisciplineNameForm, ClassCodeForm, ClassDisciplinesForm
+from users.models import AppUser, DisciplineName, DisciplineTeacher, ClassCode, ClassStudent, Parents, ClassDisciplines
 from django.contrib.auth import login, logout, authenticate
 from django.db.models import Q
 from users.methods.defs import num_years
@@ -215,21 +215,6 @@ def students_view(request):
 
 
 @login_required(login_url="/login/")
-@permission_required("users.add_classcode", "/login/")
-def add_class(request):
-    if request.method == "POST":
-        class_code_form = ClassCodeForm(request.POST)
-        if class_code_form.is_valid():
-            class_code = class_code_form.cleaned_data["class_code"]
-            teacher_id = request.POST.get("teacher_select")
-            new_class = ClassCode()
-            new_class.class_code = class_code
-            new_class.homeroom_teacher = AppUser.objects.get(id=teacher_id)
-            new_class.save()
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-
-@login_required(login_url="/login/")
 def user_info(request, user_id):
     user = AppUser.objects.get(id=user_id)
     context = {}
@@ -277,9 +262,24 @@ def user_edit(request, user_id):
 def classes(request):
     classes = ClassCode.objects.all().order_by("class_code")
     teachers = AppUser.objects.filter(Q(groups__name="teacher") | Q(groups__name="director") | Q(groups__name="head_teacher"))
-    class_code_form = ClassCodeForm()
     students_classes = ClassStudent.objects.all()
     students_classes_dict = {}
+
+    if request.method == "POST":
+        class_code_form = ClassCodeForm(request.POST)
+        if class_code_form.is_valid():
+            print("valid")
+            class_code = class_code_form.cleaned_data["class_code"]
+            teacher_id = request.POST.get("teacher_select")
+            new_class = ClassCode()
+            new_class.class_code = class_code
+            new_class.homeroom_teacher = AppUser.objects.get(id=teacher_id)
+            new_class.save()
+        else:
+            print("invalid")
+            print(class_code_form.errors)
+    else:
+        class_code_form = ClassCodeForm()
 
     for students_class in classes:
         if students_class.class_code not in students_classes_dict.keys():
@@ -346,3 +346,23 @@ def all_classes_advance(request):
             students_class.save()
 
     return HttpResponseRedirect("/classes")
+
+
+def studied_disciplines(request, class_num):
+    class_disciplines_instance = ClassDisciplines.objects.get_or_create(class_num=class_num)[0]
+    
+    if request.method == "POST":
+        form = ClassDisciplinesForm(request.POST, instance=class_disciplines_instance)
+        
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect("/classes/")
+    else:
+        form = ClassDisciplinesForm(instance=class_disciplines_instance)
+        form.fields["class_num"].initial = class_num
+
+    context = {
+        "form": form
+    }
+
+    return render(request, "studied_disciplines.html", context)

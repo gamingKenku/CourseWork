@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 
 from django.db.models import Q
 
-from users.models import ClassCode, DisciplineTeacher
+from users.models import ClassCode, DisciplineTeacher, AppUser
 
 from StudentJournal.settings import BASE_DIR
 
@@ -209,10 +209,25 @@ class WeekClassSchedule:
     WEEKDAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
     @staticmethod
-    def get_schedule_as_context(week_start_date: datetime.date, week_end_date: datetime.date, class_code: ClassCode) -> dict:
+    def get_schedule_as_context(week_start_date: datetime.date, week_end_date: datetime.date, class_code: ClassCode = None, teacher: AppUser = None) -> dict:
         if not WeekClassSchedule.check_week(week_start_date, week_end_date):
             raise ValueError("Учебная неделя не найдена")
-
+        
+        if class_code and not teacher:
+            lesson_objects = LessonSchedule.objects.filter(
+                Q(lesson_holding_datetime_start__gte = week_start_date) & 
+                Q(lesson_holding_datetime_end__lte = week_end_date) & 
+                Q(class_code = class_code)
+            ).order_by("lesson_holding_datetime_start")
+        elif teacher and not class_code:
+            lesson_objects = LessonSchedule.objects.filter(
+                Q(lesson_holding_datetime_start__gte = week_start_date) & 
+                Q(lesson_holding_datetime_end__lte = week_end_date) & 
+                Q(discipline_teacher__teacher = teacher)
+            ).order_by("lesson_holding_datetime_start")
+        else:
+            raise ValueError("Teacher or ClassCode must be passed")
+        
         schedule = {}        
 
         for weekday in WeekClassSchedule.WEEKDAYS:
@@ -226,7 +241,20 @@ class WeekClassSchedule:
                 for lesson, sequence_num in zip(BellSchedule.bell_schedule, range(1, len(BellSchedule.bell_schedule) + 1))
             ]
 
-        lesson_objects = LessonSchedule.objects.filter(Q(lesson_holding_datetime_start__gte = week_start_date) & Q(lesson_holding_datetime_end__lte = week_end_date) & Q(class_code = class_code)).order_by("lesson_holding_datetime_start")
+        if class_code and not teacher:
+            lesson_objects = LessonSchedule.objects.filter(
+                Q(lesson_holding_datetime_start__gte = week_start_date) & 
+                Q(lesson_holding_datetime_end__lte = week_end_date) & 
+                Q(class_code = class_code)
+            ).order_by("lesson_holding_datetime_start")
+        elif teacher and not class_code:
+            lesson_objects = LessonSchedule.objects.filter(
+                Q(lesson_holding_datetime_start__gte = week_start_date) & 
+                Q(lesson_holding_datetime_end__lte = week_end_date) & 
+                Q(discipline_teacher__teacher = teacher)
+            ).order_by("lesson_holding_datetime_start")
+        else:
+            return
 
         for lesson_object in lesson_objects:
             weekday = lesson_object.lesson_holding_datetime_start.strftime("%A").lower()

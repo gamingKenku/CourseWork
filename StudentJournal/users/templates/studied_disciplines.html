@@ -1,0 +1,22 @@
+{% extends "index.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-3 mt-3">
+        <div class="col-md-5">
+            <h4 class="mb-3">Выбор изучаемых дисциплин для класса {{ form.class_num.value }}</h4>
+            <form method="post" action="/classes/studied_disciplines/{{ form.class_num.value }}/">
+				{% csrf_token %}
+                {{ form.class_num }}
+                {{ form.studied_disciplines }}
+                {{ form.errors }}
+                <button class="btn btn-light mb-3" type="submit">Сохранить</button>
+            </form>
+            <p>Изменение изучаемых предметов не приведет к изменению расписания.</p>
+        </div>
+    </div>
+</div>
+{% endblock content %}

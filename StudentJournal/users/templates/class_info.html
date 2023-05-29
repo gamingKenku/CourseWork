@@ -12,7 +12,9 @@
             <p>Количество учеников в классе: {{ students_records|length }}</p>
             <p>Классный руководитель: {{students_class.homeroom_teacher.first_name}}
                 {{students_class.homeroom_teacher.last_name}} {{students_class.homeroom_teacher.patronym}}</p>
+            {% if perms.users.change_classcode %}
             <a href="/classes/{{ students_class.id }}/advance" type="button" class="btn btn-danger">Перевести учеников в следующий класс</a>
+            {% endif %}
         </div>
     </div>
     <div class="row pt-3">

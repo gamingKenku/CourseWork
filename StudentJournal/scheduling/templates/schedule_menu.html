@@ -37,6 +37,9 @@
 
         openClassJournalLink.classList.add("disabled");
 
+        updateCreateScheduleLink();
+        updateDisciplineChoices();
+
         classSelect.addEventListener("change", () => {
             const selectedValue = classSelect.value;
 
@@ -66,8 +69,61 @@
             }
         }
 
+        function updateDisciplineChoices() {
+            var classValue = $("#id_class_code").val();
+            var termValue = $("#id_term").val();
+
+            if (classValue && termValue) {
+                $.ajax({
+                    url: '/discipline_choices/' + classValue + '/' + termValue + "/",
+                    success: function (response) {
+                        var disciplineOptions = response.disciplines.map(function (discipline) {
+                            let optionElement = document.createElement("option")
+                            optionElement.value = discipline.id;
+                            optionElement.text = discipline.name;
+                            return optionElement;
+                        });
+
+                        while (disciplineSelect.firstChild) {
+                            disciplineSelect.removeChild(disciplineSelect.firstChild);
+                        }
+
+                        let emptyOption = document.createElement("option")
+                        emptyOption.value = "";
+                        emptyOption.text = "---------";
+                        disciplineSelect.appendChild(emptyOption)
+
+                        disciplineOptions.forEach(option => {
+                            disciplineSelect.appendChild(option);
+                        });
+
+                        disciplineSelect.disabled = false;
+                    },
+                    error: function () {
+                        alert('Ошибка в загрузке списка предметов.');
+                    }
+                });
+            }
+            else {
+                while (disciplineSelect.firstChild) {
+                    disciplineSelect.removeChild(disciplineSelect.firstChild);
+                }
+
+                let emptyOption = document.createElement("option")
+                emptyOption.value = "";
+                emptyOption.text = "---------";
+                disciplineSelect.appendChild(emptyOption);
+
+                disciplineSelect.disabled = true;
+            }
+        }
+
         $("#id_class_code, #id_discipline_name, #id_term").change(function () {
             updateCreateScheduleLink();
+        });
+
+        $("#id_class_code, #id_term").change(function () {
+            updateDisciplineChoices();
         });
     });
 </script>

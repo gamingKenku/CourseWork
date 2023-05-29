@@ -9,7 +9,7 @@
 	<div class="row">
 		<div class="col-md-4">
 			<h4>Добавление нового класса</h4>
-			<form action="/students/add_class/" method="post" class="form" autocomplete="off">
+			<form action="/classes/" method="post" class="form" autocomplete="off">
 				{% csrf_token %}
 				{% bootstrap_form class_code_form %}
 				<label class="pb-3 me-3" for="teacher_select">Выберите классного руководителя:</label>
@@ -23,19 +23,38 @@
 			</form>
 		</div>
 		<div class="col-md-4">
-
+			<a id="id_studied_disciplines_link" href="#" class="link-primary">Настроить изучаемые предметы для класса</a>
+			<select class="inline" onchange="updateStudiedDisciplinesLink()" name="class_num_select" id="id_class_num_select">
+				<option value>--</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+				<option value="10">10</option>
+				<option value="11">11</option>
+			</select>
 		</div>
+		{% if perms.users.change_classcode %}
 		<div class="col-md-4">
 			<a type="button" class="btn btn-danger" href="/classes/all_classes_advance">Перевести все классы на
 				следующий
 				год</a>
 		</div>
+		{% endif %}
 	</div>
 	{% endif %}
 	<div class="row">
 		<div class="col">
 			<h4>Список классов:</h4>
-			<table class="table table-striped">
+			<label class="mt-3" for="id_filter_input">Поиск по таблице:</label>
+			<input title="Поиск по таблице" placeholder="Введите Ф.И.О. или класс..."
+			class="form-control w-50 mb-3 mt-3" id="id_filter_input" type="text" onkeyup="filterTable()">
+			<table id="id_filtered_table" class="table table-striped">
 				<thead>
 					<th scope="col">Класс</th>
 					<th scope="col">Количество учеников</th>
@@ -64,4 +83,20 @@
 		</div>
 	</div>
 </div>
+<script src="{% static 'js/filter.js' %}"></script>
+<script>
+	const classNumSelect = document.getElementById("id_class_num_select");
+	const studiedDisciplinesLink = document.getElementById("id_studied_disciplines_link");
+
+	function updateStudiedDisciplinesLink() {
+		if (classNumSelect.value) {
+			let classNumValue = classNumSelect.value;
+
+			studiedDisciplinesLink.href = "/classes/studied_disciplines/" + classNumValue +"/";
+		}
+		else {
+			studiedDisciplinesLink.href = "#";
+		}
+	}
+</script>
 {% endblock %}

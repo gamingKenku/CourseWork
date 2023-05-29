@@ -7,7 +7,7 @@
 {% block navbar %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">Student Journal</a>
+        <a class="navbar-brand" href="/">Дневник школьника</a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {% if perms.users.add_appuser %}
@@ -29,18 +29,72 @@
                 </li>
                 {% elif perms.scheduling.add_lessonschedule %}
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Расписание
+                    <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Управление расписанием
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                      <li><a class="dropdown-item" href="/schedule/">Составление расписания и журналы</a></li>
-                      <li><a class="dropdown-item" href="/schedule/edit_bell_quarter/">Звонки и четверти</a></li>
+                        <li><a class="dropdown-item" href="/schedule/">Составление расписания и журналы</a></li>
+                        <li><a class="dropdown-item" href="/schedule/edit_bell_quarter/">Звонки и четверти</a></li>
                     </ul>
                 </li>
                 {% endif %}
                 {% if perms.scheduling.can_view_student_journal %}
                 <li class="nav-item">
-                    <a name="student_journal_link" id="id_student_journal_link" class="nav-link active" href="/schedule/student_journal/{% closest_weekday 0 %}/{% closest_weekday 6 %}/">Дневник</a>
+                    <a name="student_journal_link" id="id_student_journal_link" class="nav-link active"
+                        href="/schedule/student_journal/{% current_monday %}/{% current_sunday %}/">Дневник</a>
+                </li>
+                {% endif %}
+                {% if request.user|has_group:"student" %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Отчет по среднему баллу
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/students/grades-report/{{ request.user.id }}/1/">за первую
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/students/grades-report/{{ request.user.id }}/2/">за вторую
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/students/grades-report/{{ request.user.id }}/3/">за третью
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/students/grades-report/{{ request.user.id }}/4/">за
+                                четвертую четверть</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Отчет по посещаемости
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/students/non-attendance-report/{{ request.user.id }}/1/">за первую
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/students/non-attendance-report/{{ request.user.id }}/2/">за вторую
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/students/non-attendance-report/{{ request.user.id }}/3/">за третью
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/students/non-attendance-report/{{ request.user.id }}/4/">за
+                                четвертую четверть</a></li>
+                    </ul>
+                </li>
+                {% endif %}
+                {% if request.user|has_group:"teacher" or request.user|has_group:"head_teacher" %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Ваше расписание
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/schedule/teacher_schedule/{{ request.user.id }}/1/">на первую
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/schedule/teacher_schedule/{{ request.user.id }}/2/">на вторую
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/schedule/teacher_schedule/{{ request.user.id }}/3/">на третью
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/schedule/teacher_schedule/{{ request.user.id }}/4/">на
+                                четвертую четверть</a></li>
+                    </ul>
                 </li>
                 {% endif %}
             </ul>
@@ -51,8 +105,9 @@
         <div class="navbar-text ms-3 me-0">
             <a class="nav-link" href="/logout/">Выйти</a>
         </div>
-        <button class="navbar-toggler ms-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler ms-3" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+            aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>

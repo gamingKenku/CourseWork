@@ -52,7 +52,10 @@
 	</form>
 	<div class="row">
 		<div class="col bg-light list">
-			<table style="max-height: 500px;" class="table table-striped">
+			<label class="mt-3" for="id_filter_input">Поиск по таблице:</label>
+			<input title="Поиск по таблице" placeholder="Введите Ф.И.О. или класс..."
+			class="form-control w-50 mb-3 mt-3" id="id_filter_input" type="text" onkeyup="filterTable()">
+			<table id="id_filtered_table" style="max-height: 500px;" class="table table-striped">
 				<thead>
 					<th scope="col">Ф.И.О.</th>
 					<th scope="col">Класс</th>
@@ -83,4 +86,5 @@
 		</div>
 	</div>
 </div>
+<script src="{% static 'js/filter.js' %}"></script>
 {% endblock content %}

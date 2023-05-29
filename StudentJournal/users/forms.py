@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import AppUser, DisciplineName, ClassCode
+from .models import AppUser, DisciplineName, ClassCode, ClassDisciplines
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from users.methods.defs import num_years
 
@@ -64,3 +64,39 @@ class ClassCodeForm(ModelForm):
         widgets = {
             'class_code': forms.TextInput(attrs={'placeholder': 'Введите код класса...', 'class':'mb-1'})
         }
+
+    def is_valid(self) -> bool:
+        valid = super().is_valid()
+        format_valid = True
+        unique_valid = True
+
+        cyrillic_symbols = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'.upper()
+
+        class_code = self.cleaned_data.get("class_code")
+        paral = class_code[-1]
+        class_num = class_code[:-1]
+
+        if paral not in cyrillic_symbols or not class_num.isnumeric() or int(class_num) < 1 or int(class_num) > 11:
+            self.add_error("class_code", "Класс введен в неверном формате")
+            format_valid = False
+
+        if ClassCode.objects.filter(class_code=class_code).exists():
+            self.add_error("class_code", "Такой класс уже существует")
+            unique_valid = False
+
+        return valid and format_valid and unique_valid
+
+class ClassDisciplinesForm(ModelForm):
+    class Meta:
+        model = ClassDisciplines
+        fields = ["class_num", "studied_disciplines"]
+        labels = {
+            "class_num": "Целая часть номера класса:",
+            "studied_disciplines": "Изучаемые дисциплины"
+        }
+
+    class_num = forms.IntegerField(widget=forms.HiddenInput)
+    studied_disciplines = forms.ModelMultipleChoiceField(
+        queryset=DisciplineName.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )

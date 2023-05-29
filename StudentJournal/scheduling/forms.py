@@ -1,5 +1,5 @@
 from django import forms
-from users.models import AppUser, DisciplineName, DisciplineTeacher, ClassCode
+from users.models import AppUser, DisciplineName, DisciplineTeacher, ClassCode, ClassDisciplines
 from .models import LessonSchedule
 from django.db.models import Q
 import datetime
@@ -9,7 +9,7 @@ class LessonSheduleForm(forms.Form):
     start_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M', attrs={"hidden": True}))
     end_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M', attrs={"hidden": True}))
     class_code = forms.ModelChoiceField(ClassCode.objects.all(), required=True, widget=forms.HiddenInput())
-    discipline = forms.ModelChoiceField(DisciplineName.objects.all().order_by("discipline_name"), required=False)
+    discipline = forms.ModelChoiceField(DisciplineName.objects.none(), required=False)
     teacher = forms.ModelChoiceField(AppUser.objects.all().order_by("last_name", "first_name", "patronym"), required=False)
     term_num = forms.IntegerField(required=True, widget=forms.HiddenInput())
     classroom = forms.CharField(max_length=5, required=False, widget=forms.TextInput(attrs={"style":"width: 100%;"}))
@@ -18,6 +18,7 @@ class LessonSheduleForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields['discipline'].widget.attrs['class'] = 'discipline-select w-100'
         self.fields['teacher'].widget.attrs['class'] = 'teacher-select w-100'
+
 
     def is_valid(self):
         valid = super().is_valid()
@@ -103,13 +104,19 @@ class ClassPicker(forms.Form):
         super(ClassPicker, self).__init__(*args, **kwargs)
 
         if teacher:
-            teached_classes = LessonSchedule.objects.filter(discipline_teacher__teacher = teacher).values_list("class_code", flat=True).distinct()
-            print(teached_classes)
+            if teacher.has_perm("scheduling.add_lessonschedule"):
+                self.fields['class_code'].queryset = ClassCode.objects.all()
+                return
+
+            teached_lessons = LessonSchedule.objects.filter(discipline_teacher__teacher = teacher)
+            class_code_ids = teached_lessons.values("class_code_id")
+            teached_classes = ClassCode.objects.filter(id__in = class_code_ids)
             homeroomed_classes = ClassCode.objects.filter(homeroom_teacher=teacher)
 
             queryset = teached_classes.union(homeroomed_classes)
 
             self.fields['class_code'].queryset = queryset
+
 
 class DisciplineNamePicker(forms.Form):
     discipline_name = forms.ModelChoiceField(DisciplineName.objects.none(), label="")
@@ -118,9 +125,15 @@ class DisciplineNamePicker(forms.Form):
         super(DisciplineNamePicker, self).__init__(*args, **kwargs)
 
         if teacher:
-            queryset = DisciplineTeacher.objects.filter(teacher = teacher).values_list("discipline__discipline_name", flat=True).distinct()
+            if teacher.has_perm("scheduling.add_lessonschedule"):
+                self.fields['discipline_name'].queryset = DisciplineName.objects.all()
+                return
+            
+            attached_disciplines = DisciplineTeacher.objects.filter(teacher=teacher)
+            discipline_ids = attached_disciplines.values("discipline_id")
+            disciplines = DisciplineName.objects.filter(id__in=discipline_ids)
 
-            self.fields['discipline_name'].queryset = queryset
+            self.fields['discipline_name'].queryset = disciplines
 
 
 class TermPicker(forms.Form):

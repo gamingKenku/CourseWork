@@ -13,24 +13,24 @@
             <p>Дата рождения: {{ user.date_of_birth.date }} ({{ user.age }} лет)</p>
             <p>Роль: {{ group }}</p>
             {% if user|has_group:"student" %}
-            <p>Класс <a href="/classes/{{ class.class_code.id }}">{{ class.class_code.class_code }}</a></p>
+            <p>Класс <a href="/classes/{{ class.class_code.id }}/">{{ class.class_code.class_code }}</a></p>
             <h4>Отчеты</h4>
             <p>
                 <a id="id-nonattendace-report-link" class="link-primary" href="#">Просмотреть отчет по посещаемости за</a>
                 <select style="display: inline;" name="term_select" id="id-term-select-nonatt">
-                    <option value="/students/non-attendance-report/{{ user.id }}/1">первую четверть</option>
-                    <option value="/students/non-attendance-report/{{ user.id }}/2">вторую четверть</option>
-                    <option value="/students/non-attendance-report/{{ user.id }}/3">третью четверть</option>
-                    <option value="/students/non-attendance-report/{{ user.id }}/4">четвертую четверть</option>
+                    <option value="/students/non-attendance-report/{{ user.id }}/1/">первую четверть</option>
+                    <option value="/students/non-attendance-report/{{ user.id }}/2/">вторую четверть</option>
+                    <option value="/students/non-attendance-report/{{ user.id }}/3/">третью четверть</option>
+                    <option value="/students/non-attendance-report/{{ user.id }}/4/">четвертую четверть</option>
                 </select>
             </p>
             <p>
                 <a id="id-grades-report-link" class="link-primary" href="#">Просмотреть отчет по среднему баллу за</a>
                 <select style="display: inline;" name="term_select" id="id-term-select-grades">
-                    <option value="/students/grades-report/{{ user.id }}/1">первую четверть</option>
-                    <option value="/students/grades-report/{{ user.id }}/2">вторую четверть</option>
-                    <option value="/students/grades-report/{{ user.id }}/3">третью четверть</option>
-                    <option value="/students/grades-report/{{ user.id }}/4">четвертую четверть</option>
+                    <option value="/students/grades-report/{{ user.id }}/1/">первую четверть</option>
+                    <option value="/students/grades-report/{{ user.id }}/2/">вторую четверть</option>
+                    <option value="/students/grades-report/{{ user.id }}/3/">третью четверть</option>
+                    <option value="/students/grades-report/{{ user.id }}/4/">четвертую четверть</option>
                 </select>
             </p>
             {% endif %}
@@ -38,7 +38,7 @@
             <p>Обучающиеся дети:</p>
             <ul>
                 {% for parents_record in parents_records %}
-                <li> <a href="/users/{{ parents_record.student.id }}">{{ parents_record.student.first_name }} {{ parents_record.student.last_name }} {{ parents_record.student.patronym }}</a></li>
+                <li> <a href="/users/{{ parents_record.student.id }}/">{{ parents_record.student.first_name }} {{ parents_record.student.last_name }} {{ parents_record.student.patronym }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
@@ -46,7 +46,7 @@
             <h4>Классы под руководством</h4>
             <ul>
                 {% for homeroomed_class in homeroomed_classes %}
-                <li><a href="/classes/{{ homeroomed_class.id }}">{{ homeroomed_class.class_code }}</a></li>
+                <li><a href="/classes/{{ homeroomed_class.id }}/">{{ homeroomed_class.class_code }}</a></li>
                 {% empty %}
                 <p>Пока не назначены</p>
                 {% endfor %}
@@ -60,7 +60,7 @@
                 {% endfor %}
             </ul>
             {% endif %}
-            <a type="button" class="btn btn-light" href="/users/{{ user.id }}/edit">Редактировать</a>
+            <a type="button" class="btn btn-light" href="/users/{{ user.id }}/edit/">Редактировать</a>
         </div>
     </div>
 </div>

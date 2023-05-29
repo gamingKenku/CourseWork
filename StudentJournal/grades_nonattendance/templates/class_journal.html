@@ -36,8 +36,11 @@
                         <th></th>
                         {% for lesson_record in lesson_records %}
                         <th onclick="homework_window_on('{{ lesson_record.id }}')" class="text-vertical class-journal">{{ lesson_record.lesson_holding_datetime_start.date|date:"d.m.y" }}
-                            {% if lesson_record.homework != None %}
+                            {% if lesson_record.homework != None and lesson_record.homeworl != "" %}
                             <i class="bi bi-book class-journal"></i>
+                            {% endif %}
+                            {% if lesson_record.lesson_material_file != "" and lesson_record.lesson_material_file != None %}
+                            <i class="bi bi-archive class-journal left"></i>
                             {% endif %}
                         </th>
                         {% endfor %}
@@ -126,8 +129,6 @@
     const lesson_materials_link = document.getElementById("id-lesson-materials-download-link");
     const delete_lesson_materials_button = document.getElementById("id-lesson-materials-delete-button");
     const overlay = document.getElementById("id-overlay");
-
-    console.log(homework_form)
 
     function homework_window_on(lesson_id) { 
         $.ajax({
