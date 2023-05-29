@@ -146,7 +146,7 @@ def add_discipline_to_teacher(request):
 def detach_discipline(request, discipline_record_id):
     discipline_record = get_object_or_404(DisciplineTeacher, id=discipline_record_id)
     discipline_record.delete()
-    return HttpResponseRedirect("/")
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required(login_url="/login/")
@@ -240,7 +240,6 @@ def user_info(request, user_id):
 def user_edit(request, user_id):
     user = AppUser.objects.get(id=user_id)
     context = {}
-    context["user_form"] = UserForm(instance=user)
     context["user"] = user
     group_en = user.groups.get().name
 
@@ -254,6 +253,21 @@ def user_edit(request, user_id):
         case "teacher" | "director" | "head_teacher":
             context['discipline_records'] = DisciplineTeacher.objects.filter(teacher = user)
 
+    if request.method == "POST":
+        user_form = UserForm(request.POST, instance=user)
+        
+        if user_form.is_valid():
+            user_form.save()
+            if group_en == "student":
+                students_class.class_code = ClassCode.objects.get(id=request.POST["class_select"])
+                students_class.save()
+        return HttpResponseRedirect(f"/users/{user_id}/")
+
+    else:
+        user_form = UserForm(instance=user)
+
+    context["user_form"] = user_form
+    
     return render(request, "user_edit.html", context)
 
 
@@ -348,6 +362,8 @@ def all_classes_advance(request):
     return HttpResponseRedirect("/classes")
 
 
+@login_required(login_url="/login/")
+@permission_required("users.change_disciplineteacher", "/login/")
 def studied_disciplines(request, class_num):
     class_disciplines_instance = ClassDisciplines.objects.get_or_create(class_num=class_num)[0]
     

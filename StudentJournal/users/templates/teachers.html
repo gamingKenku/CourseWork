@@ -27,12 +27,12 @@
 			<form style="height: 50px;" action="/teachers/add_discipline_to_teacher/" method="post"
 				class="form d-flex justify-content-between align-items-center">
 				{% csrf_token %}
-				<select class="form_select mb-0" name="teacher_select" id="teacher_select">
+				<select style="width: 30%;" class="form_select mb-0" name="teacher_select" id="teacher_select">
 					{% for teacher in teachers %}
 					<option value="{{teacher.id}}">{{ teacher }}</option>
 					{% endfor %}
 				</select>
-				<select class="form_select mb-0" name="discipline_select" id="discipline_select">
+				<select style="width: 30%;" class="form_select mb-0" name="discipline_select" id="discipline_select">
 					{% for discipline in disciplines %}
 					<option value="{{discipline.id}}">{{discipline.discipline_name}}</option>
 					{% endfor %}

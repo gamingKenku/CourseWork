@@ -99,6 +99,15 @@ def nonatt_report(request, student_id, term):
 
     nonatt_dataframe = get_nonatt_dataframe(term_start_date, term_end_date, student)
 
+    context = {
+        "student": student,
+        "term": term
+        }
+
+    if len(nonatt_dataframe.index) == 1:
+        context["dataframe_no_index_flag"] = True
+        return render(request, "nonatt_report.html", context)
+
     nonatt_html = nonatt_dataframe.to_html(
         classes="table table-striped table-bordered",
         formatters= {
@@ -107,11 +116,7 @@ def nonatt_report(request, student_id, term):
     } 
     )
 
-    context = {
-        "student": student,
-        "term": term,
-        "nonatt_html": nonatt_html
-    }
+    context["nonatt_html"] = nonatt_html
 
     return render(request, "nonatt_report.html", context)
 
@@ -129,6 +134,15 @@ def grades_report(request, student_id, term):
 
     grades_dataframe = get_grades_dataframe(term_start_date, term_end_date, student)
 
+    context = {
+        "student": student,
+        "term": term,
+    }
+
+    if len(grades_dataframe.index) == 0:
+        context["dataframe_no_index_flag"] = True
+        return render(request, "nonatt_report.html", context)
+
     grades_html = grades_dataframe.to_html(
         classes="table table-striped table-bordered", 
         formatters={
@@ -136,11 +150,8 @@ def grades_report(request, student_id, term):
         }
     )
 
-    context = {
-        "student": student,
-        "term": term,
-        "nonatt_html": grades_html
-    }
+    
+    context["grades_html"] = grades_html
 
     return render(request, "grades_report.html", context) 
 

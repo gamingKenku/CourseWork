@@ -16,8 +16,10 @@
                 <h5>Преподаваемые предметы</h5>
                 <ul>
                     {% for discipline_record in discipline_records %}
-                    <li class="d-inline">{{ discipline_record.discipline.discipline_name }}</li>
-                    <a class="link link-danger d-inline" href="/teachers/detach_discipline/{{ discipline_record.id }}">Открепить</a>
+                    <li>
+                        {{ discipline_record.discipline.discipline_name }}
+                        <a class="link link-danger d-inline" href="/teachers/detach_discipline/{{ discipline_record.id }}">Открепить</a>
+                    </li>
                     {% empty %}
                     <p>Пока не назначены</p>
                     {% endfor %}
@@ -25,7 +27,7 @@
                 {% endif %}
                 {% if user|has_group:"student" %}
                 <h5>Ученик состоит в
-                    <select name="class_select" id="class_select">
+                    <select name="class_select" id="id_class_select">
                         <option selected="selected" value="{{ students_class.class_code.id }}">
                             {{ students_class.class_code.class_code }}</option>
                         {% for class in classes %}
