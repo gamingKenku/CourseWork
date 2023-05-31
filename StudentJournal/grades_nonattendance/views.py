@@ -56,7 +56,6 @@ def class_journal(request, class_id, discipline_id, term):
             return HttpResponseRedirect("/")
         else:
             existing_grades_nonatt = list(post_data.items())
-            print(existing_grades_nonatt)
             context.update({"existing_grades_nonatt": existing_grades_nonatt})
     else:
         existing_grades_nonatt = list(existing_grades_nonatt.items())
@@ -150,7 +149,6 @@ def grades_report(request, student_id, term):
         }
     )
 
-    
     context["grades_html"] = grades_html
 
     return render(request, "grades_report.html", context) 

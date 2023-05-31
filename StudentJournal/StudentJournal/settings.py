@@ -40,9 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'scheduling',
     'grades_nonattendance',
+    'users',
     'django_bootstrap5',
     'bootstrap_datepicker_plus',
-    'users',
 ]
 
 MIDDLEWARE = [

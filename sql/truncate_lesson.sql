@@ -1,6 +1,7 @@
 use studentjournaldb;
 
 SET FOREIGN_KEY_CHECKS=0;
-TRUNCATE TABLE users_classdisciplines;
-TRUNCATE TABLE users_classdisciplines_studied_disciplines;
+DELETE FROM `studentjournaldb`.`users_appuser`
+WHERE username != "admin";
+
 SET FOREIGN_KEY_CHECKS=1;

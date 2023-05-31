@@ -9,7 +9,6 @@ from users.methods.defs import num_years
 from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404
 import datetime
-from django.core.exceptions import ValidationError
 
 
 roles_to_russian_dict = {
@@ -23,21 +22,7 @@ roles_to_russian_dict = {
 
 @login_required(login_url="/login/")
 def index(request):
-    today_date = datetime.date.today()
-    week_start_date = today_date
-    week_end_date = today_date
-
-    while week_start_date.weekday() != 0:
-        week_start_date -= datetime.timedelta(days=1)
-
-    while week_end_date.weekday() != 6:
-        week_end_date += datetime.timedelta(days=1)
-
-    context = {
-        "week_start_date": week_start_date.isoformat(),
-        "week_end_date": week_end_date.isoformat()
-    }
-
+    context = {}
     return render(request, "index.html", context)
 
 
@@ -53,8 +38,6 @@ def login_user(request):
                 return HttpResponseRedirect("/")
             else:
                 form.add_error(None, "Неправильное имя пользователя или пароль.")
-        else:
-            print(form.errors)
     else:
         form = LoginForm()
 
@@ -95,7 +78,6 @@ def teachers_view(request):
             teacher = teacher_form.save()
             
             group_name = request.POST.get("group_select")
-            print(group_name)
             group = Group.objects.get(name=group_name)
             teacher.groups.add(group)
 
@@ -204,9 +186,9 @@ def students_view(request):
     
     context = {
         "teachers": teachers,
-        "student_form" : student_form,
-        "mother_form" : mother_form,
-        "father_form" : father_form,
+        "student_form": student_form,
+        "mother_form": mother_form,
+        "father_form": father_form,
         "class_code_form": class_code_form,
         "students_classes": students_classes,
         "classes": classes
@@ -282,16 +264,12 @@ def classes(request):
     if request.method == "POST":
         class_code_form = ClassCodeForm(request.POST)
         if class_code_form.is_valid():
-            print("valid")
             class_code = class_code_form.cleaned_data["class_code"]
             teacher_id = request.POST.get("teacher_select")
             new_class = ClassCode()
             new_class.class_code = class_code
             new_class.homeroom_teacher = AppUser.objects.get(id=teacher_id)
             new_class.save()
-        else:
-            print("invalid")
-            print(class_code_form.errors)
     else:
         class_code_form = ClassCodeForm()
 
