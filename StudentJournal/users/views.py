@@ -15,7 +15,7 @@ roles_to_russian_dict = {
     "student": "ученик",
     "teacher": "учитель",
     "head_teacher": "завуч",
-    "director": "директор",
+    "director": "администратор",
     "parent": "родитель"
 }
 
@@ -58,7 +58,7 @@ def account(request):
 @login_required(login_url="/login/")
 @permission_required("users.view_appuser", "/login/")
 def teachers_view(request):
-    teachers = AppUser.objects.filter(Q(groups__name="teacher") | Q(groups__name="director") | Q(groups__name="head_teacher"))
+    teachers = AppUser.objects.filter(Q(groups__name="teacher") | Q(groups__name="head_teacher"))
     disciplines = DisciplineName.objects.all()
     discipline_teachers = DisciplineTeacher.objects.all()
     classes = ClassCode.objects.all()
@@ -135,7 +135,7 @@ def detach_discipline(request, discipline_record_id):
 @permission_required("users.view_appuser", "/login/")
 def students_view(request):
     students_classes = ClassStudent.objects.all().order_by("class_code__class_code", "student__first_name")
-    teachers = AppUser.objects.filter(Q(groups__name="teacher") | Q(groups__name="director") | Q(groups__name="head_teacher"))
+    teachers = AppUser.objects.filter(Q(groups__name="teacher") | Q(groups__name="head_teacher"))
     classes = ClassCode.objects.all()
 
     if request.method == "POST":
@@ -210,7 +210,7 @@ def user_info(request, user_id):
             context["class"] = ClassStudent.objects.get(student = user)
         case "parent":
             context["parents_records"] = Parents.objects.filter(Q(mother = user) | Q(father = user))
-        case "teacher" | "director" | "head_teacher":
+        case "teacher" | "head_teacher":
             context["disciplines"] = DisciplineTeacher.objects.filter(teacher = user)
             context["homeroomed_classes"] = ClassCode.objects.filter(homeroom_teacher = user)
 
@@ -232,7 +232,7 @@ def user_edit(request, user_id):
             context['classes'] = ClassCode.objects.all().exclude(id=students_class.class_code.id)
         case "parent":
             pass
-        case "teacher" | "director" | "head_teacher":
+        case "teacher" | "head_teacher":
             context['discipline_records'] = DisciplineTeacher.objects.filter(teacher = user)
 
     if request.method == "POST":
@@ -257,7 +257,7 @@ def user_edit(request, user_id):
 @permission_required("users.view_classcode", "/login/")
 def classes(request):
     classes = ClassCode.objects.all().order_by("class_code")
-    teachers = AppUser.objects.filter(Q(groups__name="teacher") | Q(groups__name="director") | Q(groups__name="head_teacher"))
+    teachers = AppUser.objects.filter(Q(groups__name="teacher") | Q(groups__name="head_teacher"))
     students_classes = ClassStudent.objects.all()
     students_classes_dict = {}
 
@@ -270,6 +270,8 @@ def classes(request):
             new_class.class_code = class_code
             new_class.homeroom_teacher = AppUser.objects.get(id=teacher_id)
             new_class.save()
+
+            return HttpResponseRedirect("/classes/")
     else:
         class_code_form = ClassCodeForm()
 

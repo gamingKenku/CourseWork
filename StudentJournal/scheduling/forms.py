@@ -9,7 +9,7 @@ class LessonSheduleForm(forms.Form):
     start_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M', attrs={"hidden": True}))
     end_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M', attrs={"hidden": True}))
     class_code = forms.ModelChoiceField(ClassCode.objects.all(), required=True, widget=forms.HiddenInput())
-    discipline = forms.ModelChoiceField(DisciplineName.objects.none(), required=False)
+    discipline = forms.ModelChoiceField(DisciplineName.objects.all(), required=False)
     teacher = forms.ModelChoiceField(AppUser.objects.all().order_by("last_name", "first_name", "patronym"), required=False)
     term_num = forms.IntegerField(required=True, widget=forms.HiddenInput())
     classroom = forms.CharField(max_length=5, required=False, widget=forms.TextInput(attrs={"style":"width: 100%;"}))

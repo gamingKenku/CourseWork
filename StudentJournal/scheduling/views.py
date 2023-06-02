@@ -23,13 +23,12 @@ def create_schedule(request, class_id):
     if request.method == "POST":
         formsets_dict = {}
         formset_valid = True
+        
         for day in week.schedule.keys():
             post_data = request.POST.copy()
             formset = LessonScheduleFormset(post_data, prefix=day)
-
             for form in formset:
                 form.data[form.add_prefix("term_num")] = request.POST["term_select"]
-
             if not formset.is_valid():
                 formset_valid = False
 
