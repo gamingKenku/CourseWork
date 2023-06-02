@@ -94,7 +94,10 @@
                         <td>{{ lesson.0 }}</td>
                         <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
                         {% if lesson.1 != None %}
-                        <td>
+                        <td style="position: relative;">
+                            {% if lesson.1.lesson_material_file != "" %}
+                            <i class="bi bi-archive student-journal"></i>
+                            {% endif %}
                             <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
                             <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
                         </td>
@@ -139,7 +142,10 @@
                         <td>{{ lesson.0 }}</td>
                         <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
                         {% if lesson.1 != None %}
-                        <td>
+                        <td style="position: relative;">
+                            {% if lesson.1.lesson_material_file != "" %}
+                            <i class="bi bi-archive student-journal"></i>
+                            {% endif %}
                             <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
                             <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
                         </td>
@@ -186,7 +192,10 @@
                         <td>{{ lesson.0 }}</td>
                         <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
                         {% if lesson.1 != None %}
-                        <td>
+                        <td style="position: relative;">
+                            {% if lesson.1.lesson_material_file != "" %}
+                            <i class="bi bi-archive student-journal"></i>
+                            {% endif %}
                             <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
                             <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
                         </td>
@@ -231,7 +240,10 @@
                         <td>{{ lesson.0 }}</td>
                         <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
                         {% if lesson.1 != None %}
-                        <td>
+                        <td style="position: relative;">
+                            {% if lesson.1.lesson_material_file != "" %}
+                            <i class="bi bi-archive student-journal"></i>
+                            {% endif %}
                             <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
                             <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
                         </td>
@@ -276,7 +288,10 @@
                         <td>{{ lesson.0 }}</td>
                         <td>{{ lesson.2|hm_format_time }}-{{ lesson.3|hm_format_time }}</td>
                         {% if lesson.1 != None %}
-                        <td>
+                        <td style="position: relative;">
+                            {% if lesson.1.lesson_material_file != "" %}
+                            <i class="bi bi-archive student-journal"></i>
+                            {% endif %}
                             <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
                             <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
                         </td>

@@ -31,7 +31,7 @@ def class_journal(request, class_id, discipline_id, term):
     discipline = get_object_or_404(DisciplineName, id=discipline_id)
     students_records = ClassStudent.objects.filter(class_code=class_code)
     int_term = int(term) - 1
-    existing_grades_nonatt = get_grades_nonatt_as_dict(students_records, int_term)
+    existing_grades_nonatt = get_grades_nonatt_as_dict(students_records, int_term, discipline)
 
     if request.method == "POST":
         post_data = request.POST.copy()
