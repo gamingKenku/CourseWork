@@ -105,6 +105,13 @@ i.class-journal {
     bottom: 0;
     z-index: 1;
 }
+i.student-journal {
+    position: absolute;
+    font-size: 18px;
+    right: 0;
+    top: 0;
+    z-index: 1;
+}
 i.class-journal.left {
     position: absolute;
     font-size: 10px;
