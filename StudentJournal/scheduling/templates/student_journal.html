@@ -24,9 +24,22 @@
                 <a type="button" class="btn btn-light bi bi-arrow-right" href="/schedule/student_journal/{{ next_week_start_date }}/{{ next_week_end_date }}"></a>
             </div>
         </div>
+        <div class="col-md-3">
+            <div class="dropdown">
+                <a class="btn btn-light dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Переместиться в начало четверти
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <a class="dropdown-item" href="/schedule/student_journal/{% start_of_term 0 %}">первой</a>
+                    <a class="dropdown-item" href="/schedule/student_journal/{% start_of_term 1 %}">второй</a>
+                    <a class="dropdown-item" href="/schedule/student_journal/{% start_of_term 2 %}">третьей</a>
+                    <a class="dropdown-item" href="/schedule/student_journal/{% start_of_term 3 %}">четвертой</a>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="row mt-3 mb-3">
-        <div class="col-md-5">
+        <div class="col-lg-5">
             <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
@@ -48,7 +61,7 @@
                         {% if lesson.1 != None %}
                         <td style="position: relative;">
                             {% if lesson.1.lesson_material_file != "" %}
-                            <i class="bi bi-archive student-journal"></i>
+                            <i title="Здесь прикреплен файл." class="bi bi-archive student-journal"></i>
                             {% endif %}
                             <p class="mt-0 mb-0">{{ lesson.1.discipline_teacher.discipline }}</p>
                             <p class="mt-0 mb-0"><small class="fw-lighter">{{ lesson.1.homework|default:""|truncatechars:20 }}</small></p>
@@ -166,7 +179,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-md-5">
+        <div class="col-lg-5">
             <table class="table table-hover border border-dark">
                 <thead>
                     <tr>
@@ -358,4 +371,25 @@
         overlay.style.display = "none";
     }
 </script>
+<script>
+    function handleOptionChange(selectElement) {
+      var selectedValue = selectElement.value;
+      if (selectedValue !== "") {
+        switch (selectedValue) {
+          case "1":
+            window.location.href = "/schedule/student_journal/{% start_of_term 0 %}";
+            break;
+          case "2":
+            window.location.href = "/schedule/student_journal/{% start_of_term 1 %}";
+            break;
+          case "3":
+            window.location.href = "/schedule/student_journal/{% start_of_term 2 %}";
+            break;
+          case "4":
+            window.location.href = "/schedule/student_journal/{% start_of_term 3 %}";
+            break;
+        }
+      }
+    }
+  </script>
 {% endblock %}

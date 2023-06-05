@@ -2,6 +2,7 @@ from django.template.defaulttags import register
 from django import template
 import datetime
 from scheduling.models import LessonSchedule
+from scheduling.schedule_creator import QuarterSchedule
 
 register = template.Library()
 
@@ -68,3 +69,13 @@ def current_sunday():
     today = datetime.date.today()
     sunday = today + datetime.timedelta(days=(6 - today.weekday()))
     return sunday.strftime('%Y-%m-%d')
+
+
+@register.simple_tag
+def start_of_term(term):
+    term_start = QuarterSchedule.quarter_schedule[term]["start_date"]
+
+    monday = term_start - datetime.timedelta(days=term_start.weekday())
+    sunday = term_start + datetime.timedelta(days=(6 - term_start.weekday()))
+    
+    return monday.strftime('%Y-%m-%d') + "/" + sunday.strftime('%Y-%m-%d') + "/"
