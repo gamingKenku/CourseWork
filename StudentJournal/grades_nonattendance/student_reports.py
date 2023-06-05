@@ -2,12 +2,13 @@ import datetime
 import pandas as pd
 from django.db.models import Q
 from scheduling.models import LessonSchedule
+from users.models import DisciplineName
 from scheduling.schedule_creator import QuarterSchedule
 from .models import LessonResults;
 from scheduling.schedule_creator import QuarterSchedule
 
 
-def get_grades_nonatt_as_dict(students_records, term: int) -> dict:
+def get_grades_nonatt_as_dict(students_records, term: int, discipline: DisciplineName) -> dict:
     res = {}
 
     term_start_date = QuarterSchedule.quarter_schedule[term]["start_date"]
@@ -17,7 +18,8 @@ def get_grades_nonatt_as_dict(students_records, term: int) -> dict:
     results = LessonResults.objects.filter(
         Q(lesson__lesson_holding_datetime_start__gte=term_start_date) & 
         Q(lesson__lesson_holding_datetime_start__lte=term_end_date) & 
-        Q(student_id__in = students_ids)
+        Q(student_id__in = students_ids) &
+        Q(lesson__discipline_teacher__discipline = discipline)
     )
 
     res.update(
