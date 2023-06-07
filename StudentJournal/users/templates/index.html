@@ -39,7 +39,7 @@
                     </ul>
                 </li>
                 {% endif %}
-                {% if perms.scheduling.can_view_student_journal %}
+                {% if perms.scheduling.can_view_student_journal and not request.user.is_superuser %}
                 <li class="nav-item">
                     <a name="student_journal_link" id="id_student_journal_link" class="nav-link active"
                         href="/schedule/student_journal/{% current_monday %}/{% current_sunday %}/">Дневник</a>

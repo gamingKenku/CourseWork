@@ -78,6 +78,10 @@ class LessonBellScheduleForm(forms.Form):
     
     def is_valid(self) -> bool:
         valid = super().is_valid()
+
+        if not valid:
+            return False
+
         length_valid = True
 
         dummy_date = datetime.date(1970, 1, 1)
@@ -87,7 +91,7 @@ class LessonBellScheduleForm(forms.Form):
         length = end_time - start_time
         if length.total_seconds() / 60 != 45:
             length_valid = False
-            self.add_error(None, "Длина урока должна быть 45 минут.")
+            self.add_error("start_time", "Длина урока должна быть 45 минут.")
 
         return valid and length_valid
     
@@ -95,6 +99,20 @@ class LessonBellScheduleForm(forms.Form):
 class QuartersScheduleForm(forms.Form):
     start_date = forms.DateField()
     end_date = forms.DateField()
+
+    def is_valid(self):
+        valid = super().is_valid()
+
+        if not valid:
+            return False
+
+        date_valid = True
+
+        if self.cleaned_data["start_date"] >= self.cleaned_data["end_date"]:
+            date_valid = False
+            self.add_error("start_date", "Некорректная дата четверти.")
+
+        return valid and date_valid
 
 
 class ClassPicker(forms.Form):

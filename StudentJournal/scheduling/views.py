@@ -129,11 +129,6 @@ def bell_quarter_edit(request):
             QuarterSchedule.initialise_from_file()
 
             return HttpResponseRedirect("/")
-        else:
-            print(bell_schedule_formset.errors)
-            print(bell_schedule_formset.non_form_errors())
-            print(quarter_schedule_formset.errors)
-            print(quarter_schedule_formset.non_form_errors())
     else:
         initial_bell_schedule = list(BellSchedule.bell_schedule)
         initial_quarter_schedule = list(QuarterSchedule.quarter_schedule)
