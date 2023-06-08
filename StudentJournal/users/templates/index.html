@@ -39,7 +39,7 @@
                     </ul>
                 </li>
                 {% endif %}
-                {% if perms.scheduling.can_view_student_journal %}
+                {% if perms.scheduling.can_view_student_journal and not request.user.is_superuser %}
                 <li class="nav-item">
                     <a name="student_journal_link" id="id_student_journal_link" class="nav-link active"
                         href="/schedule/student_journal/{% current_monday %}/{% current_sunday %}/">Дневник</a>
@@ -75,6 +75,39 @@
                         <li><a class="dropdown-item" href="/students/non-attendance-report/{{ request.user.id }}/3/">за третью
                                 четверть</a></li>
                         <li><a class="dropdown-item" href="/students/non-attendance-report/{{ request.user.id }}/4/">за
+                                четвертую четверть</a></li>
+                    </ul>
+                </li>
+                {% elif request.user|has_group:"parent" %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Отчет по среднему баллу
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/students/grades-report/{% get_child_id request.user.id %}/1/">за первую
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/students/grades-report/{% get_child_id request.user.id %}/2/">за вторую
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/students/grades-report/{% get_child_id request.user.id %}/3/">за третью
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/students/grades-report/{% get_child_id request.user.id %}/4/">за
+                                четвертую четверть</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Отчет по посещаемости
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/students/non-attendance-report/{% get_child_id request.user.id %}/1/">за первую
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/students/non-attendance-report/{% get_child_id request.user.id %}/2/">за вторую
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/students/non-attendance-report/{% get_child_id request.user.id %}/3/">за третью
+                                четверть</a></li>
+                        <li><a class="dropdown-item" href="/students/non-attendance-report/{% get_child_id request.user.id %}/4/">за
                                 четвертую четверть</a></li>
                     </ul>
                 </li>

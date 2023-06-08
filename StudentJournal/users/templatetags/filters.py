@@ -1,6 +1,7 @@
 from django.template.defaulttags import register
 from django import template
 import datetime
+from users.models import AppUser
 from scheduling.models import LessonSchedule
 from scheduling.schedule_creator import QuarterSchedule
 
@@ -79,3 +80,18 @@ def start_of_term(term):
     sunday = term_start + datetime.timedelta(days=(6 - term_start.weekday()))
     
     return monday.strftime('%Y-%m-%d') + "/" + sunday.strftime('%Y-%m-%d') + "/"
+
+
+@register.simple_tag
+def get_child_id(parent_id):
+    user = AppUser.objects.get(id=parent_id)
+
+    if user.groups.get().name == "parent":
+        try:
+            student = user.mother_to_parents.get().student
+        except:
+            student = user.father_to_parents.get().student
+    else:
+        return ""
+
+    return student.id 
