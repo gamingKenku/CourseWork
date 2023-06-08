@@ -21,7 +21,16 @@
                         {% for form in bell_formset %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ form.start_time }}</td>
+                            <td>
+                                {{ form.start_time }}
+                                <ul class="mb-0 mt-0">
+									{% for error in form.start_time.errors %}
+									<small class="text-danger">
+										<li>{{ error }}</li>
+									</small>
+									{% endfor %}
+								</ul>                            
+                            </td>
                             <td>{{ form.end_time }}</td>
                         </tr>
                         {% endfor %}
@@ -41,7 +50,16 @@
                         {% for form in quarter_formset %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ form.start_date }}</td>
+                            <td>
+                                {{ form.start_date }}
+                                <ul class="mb-0 mt-0">
+									{% for error in form.start_date.errors %}
+									<small class="text-danger">
+										<li>{{ error }}</li>
+									</small>
+									{% endfor %}
+								</ul>
+                            </td>
                             <td>{{ form.end_date }}</td>
                         </tr>
                         {% endfor %}

@@ -52,7 +52,7 @@
 		<div class="col">
 			<h4 class="mt-3">Список классов:</h4>
 			<label for="id_filter_input">Поиск по таблице:</label>
-			<input title="Поиск по таблице" placeholder="Введите Ф.И.О. или класс..."
+			<input title="Поиск по таблице" placeholder="Введите Ф.И.О., статус или класс..."
 			class="form-control w-50 mb-3 mt-3" id="id_filter_input" type="text" onkeyup="filterTable()">
 			<table id="id_filtered_table" class="table table-striped">
 				<thead>
@@ -74,7 +74,10 @@
 							<a href="/users/{{ class.homeroom_teacher.id }}">{{ class.homeroom_teacher }}</a>
 						</td>
 						<td>
-							{{ class.get_status_display }}
+							{{ class.get_status_display }} 
+							{% if class.graduated_year %}
+								({{ class.graduated_year }} г.)
+							{% endif %}
 						</td>
 					</tr>
 					{% endfor %}
